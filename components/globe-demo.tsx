@@ -523,7 +523,7 @@ export default function GlobeDemo() {
             </h2>
 
             <p className="mt-5 text-base leading-relaxed text-gray-600 sm:text-lg">
-              Built by logistics operators with real warehouse leadership
+              Built by logistics experts with real warehouse leadership
               experience Certified logistics personnel and structured
               operational teams Experience in high‑volume FMCG and retail
               distribution environments Operational governance through SOPs,

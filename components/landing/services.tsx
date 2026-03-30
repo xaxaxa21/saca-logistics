@@ -3,98 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
-import {
-  Warehouse,
-  Package,
-  Users,
-  Tags,
-  CheckCircle,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Sparkles } from "lucide-react";
+import { servicesCardsData } from "@/lib/services-cards-data";
+import { ServiceCardView } from "@/components/landing/service-card-view";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const services = [
-  {
-    id: "3pl",
-    icon: Warehouse,
-    title: "3PL & Retail Logistics",
-    subtitle:
-      "Structured warehouse operations designed for accuracy, reliability and scalability",
-    image:
-      "https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=800",
-    features: [
-      "Inbound reception and quality control",
-      "Pallet storage and replenishment",
-      "Picking and packing operations",
-      "Cross-docking capabilities",
-      "Inventory control and cycle counting",
-      "KPI reporting and analytics",
-    ],
-    color: "#3988EA",
-    gradient: "from-[#3988EA] to-[#124D95]",
-  },
-  {
-    id: "fulfillment",
-    icon: Package,
-    title: "Fulfillment Solutions",
-    subtitle:
-      "Comprehensive B2B & B2C order processing for e-commerce and omnichannel businesses",
-    image:
-      "https://images.unsplash.com/photo-1578575437130-527eed3abbec?q=80&w=800",
-    features: [
-      "Pick & pack services",
-      "Order consolidation and packaging",
-      "Returns management (RMA)",
-      "System integration (WMS/ERP)",
-      "Performance monitoring",
-      "Scalable with seasonal peaks",
-    ],
-    color: "#124D95",
-    gradient: "from-[#124D95] to-[#0a2d4d]",
-  },
-  {
-    id: "workforce",
-    icon: Users,
-    title: "Workforce Flexibility",
-    subtitle:
-      "Rapidly scale operational capacity with trained and certified staff",
-    image:
-      "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=800",
-    features: [
-      "Recruitment and placement",
-      "Temporary and permanent staffing",
-      "Operational ramp-up support",
-      "Seasonal peak management",
-      "Dedicated or shared teams",
-      "Training and certification",
-    ],
-    color: "#F5A623",
-    gradient: "from-[#F5A623] to-[#E09612]",
-  },
-  {
-    id: "value-added",
-    icon: Tags,
-    title: "Value Added Services",
-    subtitle: "Complementary services for compliance and retail standards",
-    image:
-      "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800",
-    features: [
-      "Product labelling and re-labelling",
-      "Translation services (Romanian/EU)",
-      "Kitting and promotional packaging",
-      "Co-packing operations",
-      "Product preparation and rework",
-      "Compliance documentation",
-    ],
-    color: "#3988EA",
-    gradient: "from-[#3988EA] to-[#6ba8f0]",
-  },
-];
 
 export function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -340,94 +253,15 @@ export function ServicesSection() {
 
         {/* ── Service cards — stacked scroll reveals ── */}
         <div className="flex flex-col gap-14 md:gap-20">
-          {services.map((service, index) => {
-            const Icon = service.icon;
-            const isEven = index % 2 === 0;
-
-            return (
-              <article
-                key={service.id}
-                className="svc-card overflow-hidden rounded-2xl bg-white/[0.07] shadow-lg shadow-black/10 backdrop-blur-sm md:rounded-3xl"
-              >
-                <div
-                  className={cn(
-                    "flex flex-col md:flex-row md:items-stretch",
-                    !isEven && "md:flex-row-reverse",
-                  )}
-                >
-                  {/* Image side */}
-                  <div className="svc-card-img relative aspect-16/10 w-full shrink-0 overflow-hidden md:aspect-auto md:w-[45%]">
-                    <Image
-                      src={service.image}
-                      alt={`${service.title} — photography`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 540px"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-transparent md:bg-linear-to-r md:from-transparent md:via-transparent md:to-black/10" />
-
-                    {/* Number badge on image */}
-                    <div className="absolute bottom-4 right-4 flex items-center gap-2 md:bottom-6 md:right-6">
-                      <span
-                        className="flex h-10 w-10 items-center justify-center rounded-xl text-sm font-bold text-white shadow-lg backdrop-blur-md md:h-12 md:w-12 md:text-base"
-                        style={{ backgroundColor: `${service.color}CC` }}
-                      >
-                        <Icon className="h-5 w-5" aria-hidden />
-                      </span>
-                      <span className="font-mono text-3xl font-bold text-white/30 md:text-4xl">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Text side */}
-                  <div className="flex flex-1 flex-col justify-center p-6 sm:p-8 md:p-10 lg:p-12">
-                    <div
-                      className="svc-card-rule mb-4 h-[2px] w-16 origin-left md:mb-5"
-                      style={{
-                        background: `linear-gradient(90deg, ${service.color}, transparent)`,
-                      }}
-                    />
-
-                    <h3 className="svc-card-anim mb-2 text-xl font-bold text-white sm:text-2xl md:text-3xl">
-                      {service.title}
-                    </h3>
-
-                    <p className="svc-card-anim mb-6 text-sm leading-relaxed text-white/70 md:text-base">
-                      {service.subtitle}
-                    </p>
-
-                    <ul className="svc-card-anim mb-8 grid gap-3 text-sm text-white/80 sm:grid-cols-2 md:gap-4">
-                      {service.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-3">
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-white/10">
-                            <CheckCircle className="h-3.5 w-3.5 text-white/70" />
-                          </span>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div className="svc-card-anim">
-                      <Button
-                        type="button"
-                        className={cn(
-                          "w-full rounded-xl bg-linear-to-r px-8 py-5 font-semibold text-white transition-all hover:opacity-90 hover:shadow-xl sm:w-auto",
-                          service.gradient,
-                        )}
-                        onClick={scrollToContact}
-                      >
-                        <span className="flex items-center justify-center gap-2">
-                          Learn more
-                          <ArrowRight className="h-4 w-4" aria-hidden />
-                        </span>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
+          {servicesCardsData.map((service, index) => (
+            <ServiceCardView
+              key={service.id}
+              service={service}
+              index={index}
+              variant="section"
+              onCtaClick={scrollToContact}
+            />
+          ))}
         </div>
       </div>
     </section>

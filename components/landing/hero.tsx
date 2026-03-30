@@ -442,18 +442,6 @@ export function HeroSection() {
           0.3,
         )
 
-        /* "3PL," — fade in + scrambleText */
-        .to(
-          q(".hero-word-3pl"),
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.4,
-            ease: "power2.out",
-          },
-          0.55,
-        )
-
         /* "Fulfillment" — ribbon wave per char */
         .to(
           q(".hero-word-wave .hero-char"),
@@ -621,31 +609,6 @@ export function HeroSection() {
         /* Scroll indicator */
         .to(q(".scroll-indicator"), { autoAlpha: 1, y: 0, duration: 0.6 }, 2.3);
 
-      /* ScrambleText effects (skip if prefers-reduced-motion) */
-      if (!reduce) {
-        tl.to(
-          q(".hero-word-3pl"),
-          {
-            duration: 1.2,
-            scrambleText: { text: "3PL,", chars: "01#@&!%$", speed: 0.4 },
-          },
-          0.6,
-        );
-
-        tl.to(
-          q(".hero-word-solutions"),
-          {
-            duration: 1.5,
-            scrambleText: {
-              text: "Solutions",
-              chars: "XYZABC0123",
-              speed: 0.3,
-            },
-          },
-          1.55,
-        );
-      }
-
       /* ── Infinite ambient loops (collected for visibility-gated pause/resume) ── */
       infiniteAnimsRef.current = [];
       if (!reduce) {
@@ -765,7 +728,9 @@ export function HeroSection() {
         }
         try {
           v.currentTime = i * 1.4;
-        } catch { /* some browsers reject early seeks */ }
+        } catch {
+          /* some browsers reject early seeks */
+        }
       });
 
       /* ── Cursor tilt on centerpiece (desktop only) ── */
@@ -1136,7 +1101,7 @@ export function HeroSection() {
 
           <h1 className="relative z-10 text-[2rem] font-semibold leading-[1.08] tracking-[-0.04em] text-[#1A1A2E] sm:text-[2.6rem] md:text-[3.4rem] lg:text-[4.4rem] xl:text-[5rem]">
             <span className="sr-only">
-              Flexible 3PL, Fulfillment &amp; Global Logistics Solutions
+              Flexible, Fulfillment &amp; Global Logistics Solutions
             </span>
 
             <div aria-hidden className="space-y-1 md:space-y-2">
@@ -1146,9 +1111,7 @@ export function HeroSection() {
                   {splitChars("Flexible", "flex")}
                 </span>
                 <span className="inline-block">&nbsp;</span>
-                <span className="hero-word hero-word-scramble hero-word-3pl inline-block text-[#1A1A2E]">
-                  3PL,
-                </span>
+
                 <span className="inline-block">&nbsp;</span>
                 <span className="hero-word hero-word-wave inline-block">
                   {splitChars("Fulfillment", "ful")}
@@ -1201,7 +1164,10 @@ export function HeroSection() {
 
                 <span className="hero-word hero-word-scramble hero-word-solutions inline-block text-[#2563EB]">
                   S
-                  <span className="hero-letter-o inline-block" style={{ animationDelay: "-1.2s" }}>
+                  <span
+                    className="hero-letter-o inline-block"
+                    style={{ animationDelay: "-1.2s" }}
+                  >
                     o
                   </span>
                   lutions
@@ -1379,7 +1345,7 @@ export function HeroSection() {
               60%,
               100% {
                 stroke-dashoffset: 0;
-                fill: #1E40AF;
+                fill: #1e40af;
               }
             }
 
@@ -1391,7 +1357,7 @@ export function HeroSection() {
               .hero-amp-text {
                 animation: none;
                 stroke-dashoffset: 0;
-                fill: #1E40AF;
+                fill: #1e40af;
               }
             }
           `}</style>

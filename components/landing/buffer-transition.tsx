@@ -21,7 +21,9 @@ export function BufferTransition() {
     const root = sectionRef.current;
     if (!root) return;
 
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     const ctx = gsap.context(() => {
       const q = gsap.utils.selector(root);
@@ -42,58 +44,77 @@ export function BufferTransition() {
 
       /* Shared entrance tween builder */
       const buildEntrance = (tl: gsap.core.Timeline) => {
-        tl
-          .to(q(".buffer-rule"), {
+        tl.to(
+          q(".buffer-rule"),
+          {
             scaleX: 1,
             duration: 1,
             stagger: 0.15,
             ease: "power2.inOut",
-          }, 0)
-          .to(q(".buffer-metric"), {
-            autoAlpha: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.9,
-            stagger: 0.12,
-            ease: "power3.out",
-          }, 0.2)
-          .to(q(".buffer-label"), {
-            autoAlpha: 1,
-            y: 0,
-            filter: "blur(0px)",
-            duration: 0.7,
-            stagger: 0.12,
-            ease: "power3.out",
-          }, 0.45)
-          .to(q(".buffer-divider"), {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-          }, 0.6);
+          },
+          0,
+        )
+          .to(
+            q(".buffer-metric"),
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.9,
+              stagger: 0.12,
+              ease: "power3.out",
+            },
+            0.2,
+          )
+          .to(
+            q(".buffer-label"),
+            {
+              autoAlpha: 1,
+              y: 0,
+              filter: "blur(0px)",
+              duration: 0.7,
+              stagger: 0.12,
+              ease: "power3.out",
+            },
+            0.45,
+          )
+          .to(
+            q(".buffer-divider"),
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power2.out",
+            },
+            0.6,
+          );
       };
 
       /* Mobile: instant toggle (no per-frame scrub work) / Desktop: smooth scrub */
       const mm = gsap.matchMedia();
       mm.add("(pointer: coarse)", () => {
-        buildEntrance(gsap.timeline({
-          scrollTrigger: {
-            trigger: root,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-        }));
+        buildEntrance(
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: root,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          }),
+        );
       });
       mm.add("(pointer: fine)", () => {
-        buildEntrance(gsap.timeline({
-          scrollTrigger: {
-            trigger: root,
-            start: "top 82%",
-            end: "top 35%",
-            scrub: reduce ? false : 0.5,
-            toggleActions: reduce ? "play none none reverse" : undefined,
-          },
-        }));
+        buildEntrance(
+          gsap.timeline({
+            scrollTrigger: {
+              trigger: root,
+              start: "top 82%",
+              end: "top 35%",
+              scrub: reduce ? false : 0.5,
+              toggleActions: reduce ? "play none none reverse" : undefined,
+            },
+          }),
+        );
       });
 
       /* Animated metric values — fire once when scrolled into view */
@@ -134,11 +155,11 @@ export function BufferTransition() {
             const m2 = metricRefs.current[2];
             if (m2) {
               gsap.to(m2, {
-                duration: 1.5,
+                duration: 1.75,
                 scrambleText: {
-                  text: "B2B",
-                  chars: "ABC2XYZ",
-                  speed: 0.4,
+                  text: "B2B / B2C",
+                  chars: "C2B / BB2",
+                  speed: 0.3,
                 },
               });
             }

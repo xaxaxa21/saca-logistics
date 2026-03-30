@@ -8,16 +8,15 @@ import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { Header } from "@/components/landing/header";
 import { HeroSection } from "@/components/landing/hero";
 import { WhyUsSection } from "@/components/landing/why-us";
-import { ServicesSection } from "@/components/landing/services";
-import { GlobalLogisticsSection } from "@/components/landing/global-logistics";
 import { InfrastructureSection } from "@/components/landing/infrastructure";
-import { StatsSection } from "@/components/landing/stats";
-import { TestimonialsSection } from "@/components/landing/testimonials";
+import { ServiceHubNavProvider } from "@/components/landing/service-hub-nav-context";
+
 import { ContactSection } from "@/components/landing/contact";
 import { Footer } from "@/components/landing/footer";
 import { BufferTransition } from "@/components/landing/buffer-transition";
 import { CinematicVideoBlock } from "@/components/landing/cinematic-video-block";
 import GlobeDemo from "@/components/globe-demo";
+import WServicesSection from "@/components/landing/wservicesx";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -56,7 +55,7 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <ServiceHubNavProvider>
       <Header />
 
       <div id="smooth-wrapper" ref={wrapperRef} className="overflow-x-clip">
@@ -101,9 +100,9 @@ export default function Home() {
                 <div className="h-px w-full bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.3)_26%,rgba(255,255,255,0.5)_62%,transparent)] opacity-60" />
               </div>
             </div>
+            <WServicesSection />
 
             <WhyUsSection />
-            <ServicesSection />
 
             {/* Global shipment cinematic video */}
             <div className="relative bg-[#124D95]">
@@ -130,7 +129,7 @@ export default function Home() {
                 videoClassName="scale-[1.03]"
                 overlayClassName="bg-[linear-gradient(180deg,rgba(18,77,149,0.22)_0%,rgba(18,77,149,0.08)_36%,rgba(18,77,149,0.52)_100%)]"
                 label="End-to-end logistics"
-                title="From port to shelf, across every continent"
+                title="From supplier to shelf, across every continent"
                 description="Integrated global shipment coordination connecting warehouses, carriers and last-mile delivery into a single operational flow."
                 reveal
                 allowAutoplayOnCoarse
@@ -141,7 +140,6 @@ export default function Home() {
               </div>
             </div>
 
-            <GlobalLogisticsSection />
             <InfrastructureSection />
 
             <ContactSection />
@@ -149,6 +147,6 @@ export default function Home() {
           </main>
         </div>
       </div>
-    </>
+    </ServiceHubNavProvider>
   );
 }

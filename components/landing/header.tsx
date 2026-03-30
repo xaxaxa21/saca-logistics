@@ -5,30 +5,34 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SERVICE_HUB_NAV_ITEMS } from "@/lib/service-hub-nav";
+import { useServiceHubNav } from "@/components/landing/service-hub-nav-context";
 
-type NavItem = { label: string; href: string };
+type NavLinkItem = { kind: "link"; label: string; href: string };
+type NavServicesItem = { kind: "services" };
+type NavEntry = NavLinkItem | NavServicesItem;
 
-const navItems: NavItem[] = [
-  { label: "Home", href: "#hero" },
-  { label: "Why Us", href: "#why-us" },
-  { label: "Services", href: "#services" },
-  { label: "Global Logistics", href: "#global" },
-  { label: "Infrastructure", href: "#infrastructure" },
-  { label: "Contact", href: "#contact" },
+const navEntries: NavEntry[] = [
+  { kind: "link", label: "Home", href: "#hero" },
+  { kind: "link", label: "Why Us", href: "#why-us" },
+  { kind: "services" },
+  { kind: "link", label: "Infrastructure", href: "#infrastructure" },
+  { kind: "link", label: "Contact", href: "#contact" },
 ];
 
 const sectionIds = [
   "hero",
   "why-us",
   "services",
-  "global",
   "infrastructure",
   "contact",
 ] as const;
 
 export function Header() {
+  const { scrollToSectionHref, requestNavigateToService } = useServiceHubNav();
+
   const headerRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const menuOpenBtnRef = useRef<HTMLButtonElement>(null);
@@ -37,10 +41,16 @@ export function Header() {
 
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [servicesExpanded, setServicesExpanded] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
 
   const isMenuOpenRef = useRef(isMenuOpen);
   isMenuOpenRef.current = isMenuOpen;
+
+  /* Collapse Services submenu when overlay closes */
+  useEffect(() => {
+    if (!isMenuOpen) setServicesExpanded(false);
+  }, [isMenuOpen]);
 
   /* ── Portal target ── */
   useEffect(() => {
@@ -210,16 +220,13 @@ export function Header() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isMenuOpen, closeMenu]);
 
-  /* ── Scroll to section ── */
+  /* ── Scroll to section (ScrollSmoother-aware via context) ── */
   const scrollToSection = useCallback(
     (href: string) => {
-      const el = document.querySelector(href);
-      if (!el) return;
       closeMenu();
-      const top = el.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top, behavior: "smooth" });
+      scrollToSectionHref(href);
     },
-    [closeMenu],
+    [closeMenu, scrollToSectionHref],
   );
 
   return (
@@ -306,32 +313,93 @@ export function Header() {
 
                 {/* Navigation links */}
                 <nav className="mt-12 flex flex-1 flex-col justify-center gap-1 sm:mt-16">
-                  {navItems.map((item) => {
-                    const isActive = activeSection === item.href.slice(1);
-                    return (
-                      <button
-                        key={item.label}
-                        onClick={() => scrollToSection(item.href)}
-                        className="menu-link group flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left transition-colors hover:bg-white/5"
-                      >
-                        {/* Active dot indicator */}
-                        <span
-                          className={`h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-300 ${
-                            isActive
-                              ? "bg-[#A9C8FF] shadow-[0_0_10px_rgba(169,200,255,0.6)]"
-                              : "bg-white/15"
-                          }`}
-                        />
-                        <span
-                          className={`text-[1.6rem] font-medium tracking-[-0.02em] transition-colors duration-200 sm:text-[2rem] ${
-                            isActive
-                              ? "text-white"
-                              : "text-white/50 group-hover:text-white/90"
-                          }`}
+                  {navEntries.map((entry) => {
+                    if (entry.kind === "link") {
+                      const isActive = activeSection === entry.href.slice(1);
+                      return (
+                        <button
+                          key={entry.label}
+                          type="button"
+                          onClick={() => scrollToSection(entry.href)}
+                          className="menu-link group flex items-center gap-3 rounded-2xl px-4 py-3.5 text-left transition-colors hover:bg-white/5"
                         >
-                          {item.label}
-                        </span>
-                      </button>
+                          <span
+                            className={`h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-300 ${
+                              isActive
+                                ? "bg-[#A9C8FF] shadow-[0_0_10px_rgba(169,200,255,0.6)]"
+                                : "bg-white/15"
+                            }`}
+                          />
+                          <span
+                            className={`text-[1.6rem] font-medium tracking-[-0.02em] transition-colors duration-200 sm:text-[2rem] ${
+                              isActive
+                                ? "text-white"
+                                : "text-white/50 group-hover:text-white/90"
+                            }`}
+                          >
+                            {entry.label}
+                          </span>
+                        </button>
+                      );
+                    }
+
+                    const servicesActive = activeSection === "services";
+                    return (
+                      <div key="services" className="flex flex-col gap-0.5">
+                        <button
+                          type="button"
+                          className="menu-link group flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-left transition-colors hover:bg-white/5"
+                          aria-expanded={servicesExpanded}
+                          aria-controls="header-services-submenu"
+                          id="header-services-trigger"
+                          onClick={() => setServicesExpanded((v) => !v)}
+                        >
+                          <span
+                            className={`h-1.5 w-1.5 shrink-0 rounded-full transition-all duration-300 ${
+                              servicesActive
+                                ? "bg-[#A9C8FF] shadow-[0_0_10px_rgba(169,200,255,0.6)]"
+                                : "bg-white/15"
+                            }`}
+                          />
+                          <span
+                            className={`flex flex-1 items-center justify-between gap-3 text-[1.6rem] font-medium tracking-[-0.02em] transition-colors duration-200 sm:text-[2rem] ${
+                              servicesActive
+                                ? "text-white"
+                                : "text-white/50 group-hover:text-white/90"
+                            }`}
+                          >
+                            Services
+                            <ChevronDown
+                              className={`h-6 w-6 shrink-0 text-white/40 transition-transform duration-200 ${
+                                servicesExpanded ? "rotate-180" : ""
+                              }`}
+                              aria-hidden
+                            />
+                          </span>
+                        </button>
+                        {servicesExpanded ? (
+                          <div
+                            id="header-services-submenu"
+                            role="group"
+                            aria-labelledby="header-services-trigger"
+                            className="flex flex-col gap-0.5 border-l border-white/10 pl-6 ml-6 mr-2 pb-1"
+                          >
+                            {SERVICE_HUB_NAV_ITEMS.map((item) => (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => {
+                                  closeMenu();
+                                  requestNavigateToService(item.id);
+                                }}
+                                className="rounded-xl px-3 py-2.5 text-left text-[0.95rem] leading-snug text-white/55 transition-colors hover:bg-white/5 hover:text-white/95 sm:text-[1.05rem]"
+                              >
+                                {item.label}
+                              </button>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
                     );
                   })}
                 </nav>

@@ -1,128 +1,127 @@
-'use client'
+"use client";
 
-import { useEffect, useRef, useState } from 'react'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import Image from 'next/image'
-import Link from 'next/link'
-import { 
-  Linkedin, 
-  Mail, 
-  Phone, 
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Linkedin,
+  Mail,
+  Phone,
   MapPin,
   ArrowUp,
-  ArrowUpRight
-} from 'lucide-react'
+  ArrowUpRight,
+} from "lucide-react";
 
-gsap.registerPlugin(ScrollTrigger)
+gsap.registerPlugin(ScrollTrigger);
 
 const footerLinks = {
   services: [
-    { label: '3PL & Retail Logistics', href: '#services' },
-    { label: 'Fulfillment Solutions', href: '#services' },
-    { label: 'Workforce Flexibility', href: '#services' },
-    { label: 'Value Added Services', href: '#services' },
-    { label: 'Global Import/Export', href: '#global' },
+    { label: "3PL & Retail Logistics", href: "#services" },
+    { label: "Fulfillment Solutions", href: "#services" },
+    { label: "Workforce Flexibility", href: "#services" },
+    { label: "Value Added Services", href: "#services" },
+    { label: "Global Import/Export", href: "#global" },
   ],
   company: [
-    { label: 'About Us', href: '#why-us' },
-    { label: 'Our Team', href: '#why-us' },
-    { label: 'Infrastructure', href: '#infrastructure' },
-    { label: 'Careers', href: '#contact' },
-    { label: 'Contact', href: '#contact' },
+    { label: "About Us", href: "#why-us" },
+    { label: "Our Team", href: "#why-us" },
+    { label: "Infrastructure", href: "#infrastructure" },
+    { label: "Careers", href: "#contact" },
+    { label: "Contact", href: "#contact" },
   ],
   resources: [
-    { label: 'Blog', href: '#' },
-    { label: 'Case Studies', href: '#' },
-    { label: 'Logistics Guide', href: '#' },
-    { label: 'FAQ', href: '#' },
+    { label: "Blog", href: "#" },
+    { label: "Case Studies", href: "#" },
+    { label: "Logistics Guide", href: "#" },
+    { label: "FAQ", href: "#" },
   ],
-}
+};
 
 export function Footer() {
-  const footerRef = useRef<HTMLElement>(null)
-  const [showScrollTop, setShowScrollTop] = useState(false)
+  const footerRef = useRef<HTMLElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       // Logo and brand entrance
       gsap.fromTo(
-        '.footer-brand',
+        ".footer-brand",
         { opacity: 0, y: 40 },
         {
           opacity: 1,
           y: 0,
           duration: 0.8,
-          ease: 'power3.out',
+          ease: "power3.out",
           scrollTrigger: {
             trigger: footerRef.current,
-            start: 'top 90%',
-            toggleActions: 'play none none reverse',
+            start: "top 90%",
+            toggleActions: "play none none reverse",
           },
-        }
-      )
+        },
+      );
 
       // Link columns stagger
       gsap.fromTo(
-        '.footer-column',
+        ".footer-column",
         { opacity: 0, y: 30 },
         {
           opacity: 1,
           y: 0,
           duration: 0.6,
           stagger: 0.1,
-          ease: 'power3.out',
+          ease: "power3.out",
           scrollTrigger: {
             trigger: footerRef.current,
-            start: 'top 85%',
-            toggleActions: 'play none none reverse',
+            start: "top 85%",
+            toggleActions: "play none none reverse",
           },
-        }
-      )
+        },
+      );
 
       // Bottom bar slide in
       gsap.fromTo(
-        '.footer-bottom',
+        ".footer-bottom",
         { opacity: 0, y: 20 },
         {
           opacity: 1,
           y: 0,
           duration: 0.6,
-          ease: 'power2.out',
+          ease: "power2.out",
           scrollTrigger: {
-            trigger: '.footer-bottom',
-            start: 'top 95%',
-            toggleActions: 'play none none reverse',
+            trigger: ".footer-bottom",
+            start: "top 95%",
+            toggleActions: "play none none reverse",
           },
-        }
-      )
-
-    }, footerRef)
+        },
+      );
+    }, footerRef);
 
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 500)
-    }
+      setShowScrollTop(window.scrollY > 500);
+    };
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      ctx.revert()
-      window.removeEventListener('scroll', handleScroll)
-    }
-  }, [])
+      ctx.revert();
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleNavClick = (href: string) => {
-    const element = document.querySelector(href)
+    const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
+      element.scrollIntoView({ behavior: "smooth" });
     }
-  }
+  };
 
   return (
-    <footer 
+    <footer
       ref={footerRef}
       className="relative bg-gradient-to-b from-[#0a1628] to-[#071018] text-white overflow-hidden"
     >
@@ -131,16 +130,16 @@ export function Footer() {
         {/* Gradient mesh */}
         <div className="absolute top-0 left-1/4 w-[400px] h-[400px] bg-[#3988EA]/10 rounded-full blur-[150px]" />
         <div className="absolute bottom-0 right-1/4 w-[300px] h-[300px] bg-[#124D95]/10 rounded-full blur-[120px]" />
-        
+
         {/* Grid pattern */}
-        <div 
+        <div
           className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: `
               linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
               linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)
             `,
-            backgroundSize: '60px 60px',
+            backgroundSize: "60px 60px",
           }}
         />
       </div>
@@ -164,37 +163,40 @@ export function Footer() {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold tracking-tight">
-                    <span className="text-[#3988EA]">SACA</span>{' '}
+                    <span className="text-[#3988EA]">SACA</span>{" "}
                     <span className="text-white">LOGISTICS</span>
                   </h2>
-                  <p className="text-sm text-white/50">Integrated 3PL & Supply Chain</p>
+                  <p className="text-sm text-white/50">
+                    Integrated 3PL & Supply Chain
+                  </p>
                 </div>
               </Link>
-              
+
               <p className="text-white/60 leading-relaxed mb-8 max-w-sm">
-                From sourcing to shelf – fully managed. We provide flexible 3PL, 
-                fulfillment & global logistics solutions for retail, FMCG and e-commerce.
+                From sourcing to shelf – fully managed. We provide flexible 3PL,
+                fulfillment & global logistics solutions for retail, FMCG and
+                e-commerce.
               </p>
 
               {/* Contact Info */}
               <div className="space-y-4">
-                <a 
+                <a
                   href="mailto:contact@sacalogistics.com"
                   className="group flex items-center gap-4 text-white/60 hover:text-white transition-colors"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-[#3988EA]/20 transition-colors">
                     <Mail className="w-5 h-5" />
                   </div>
-                  <span className="text-sm">contact@sacalogistics.com</span>
+                  <span className="text-sm">contact@sacaexperts.ro</span>
                 </a>
-                <a 
-                  href="tel:+40123456789"
+                <a
+                  href="tel:+40 725 193 181"
                   className="group flex items-center gap-4 text-white/60 hover:text-white transition-colors"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-[#3988EA]/20 transition-colors">
                     <Phone className="w-5 h-5" />
                   </div>
-                  <span className="text-sm">+40 XXX XXX XXX</span>
+                  <span className="text-sm">+40 725 193 181</span>
                 </a>
                 <div className="flex items-center gap-4 text-white/60">
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
@@ -225,81 +227,25 @@ export function Footer() {
                 ))}
               </ul>
             </div>
-
-            {/* Company Links */}
-            <div className="footer-column">
-              <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#F5A623]" />
-                Company
-              </h3>
-              <ul className="space-y-4">
-                {footerLinks.company.map((link) => (
-                  <li key={link.label}>
-                    <button
-                      onClick={() => handleNavClick(link.href)}
-                      className="group flex items-center gap-2 text-sm text-white/60 hover:text-[#3988EA] transition-all duration-300"
-                    >
-                      <span className="w-0 h-px bg-[#3988EA] group-hover:w-3 transition-all duration-300" />
-                      {link.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Resources Links */}
-            <div className="footer-column">
-              <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-[#3988EA]" />
-                Resources
-              </h3>
-              <ul className="space-y-4">
-                {footerLinks.resources.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="group flex items-center gap-2 text-sm text-white/60 hover:text-[#3988EA] transition-all duration-300"
-                    >
-                      <span className="w-0 h-px bg-[#3988EA] group-hover:w-3 transition-all duration-300" />
-                      {link.label}
-                      <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-300" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-
-              {/* Social Links */}
-              <div className="mt-10">
-                <h4 className="text-sm font-semibold mb-4 text-white/80">Follow Us</h4>
-                <div className="flex gap-3">
-                  <a
-                    href="#"
-                    className="group w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center hover:bg-[#3988EA] transition-all duration-300 hover:scale-110"
-                    aria-label="LinkedIn"
-                  >
-                    <Linkedin className="w-5 h-5 text-white/60 group-hover:text-white transition-colors" />
-                  </a>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="footer-bottom border-t border-white/10 py-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <p className="text-sm text-white/40">
-            &copy; {new Date().getFullYear()} SACA Logistics (Saca Experts SRL). All rights reserved.
+            &copy; {new Date().getFullYear()} SACA Logistics (Saca Experts SRL).
+            All rights reserved.
           </p>
-          
+
           <div className="flex items-center gap-8">
-            <Link 
-              href="#" 
+            <Link
+              href="#"
               className="text-sm text-white/40 hover:text-white transition-colors duration-300"
             >
               Privacy Policy
             </Link>
-            <Link 
-              href="#" 
+            <Link
+              href="#"
               className="text-sm text-white/40 hover:text-white transition-colors duration-300"
             >
               Terms of Service
@@ -312,15 +258,17 @@ export function Footer() {
       <button
         onClick={scrollToTop}
         className={`fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-gradient-to-br from-[#3988EA] to-[#124D95] text-white shadow-lg hover:shadow-xl hover:shadow-[#3988EA]/30 transition-all duration-500 flex items-center justify-center z-50 group ${
-          showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
+          showScrollTop
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4 pointer-events-none"
         }`}
         aria-label="Scroll to top"
       >
         <ArrowUp className="w-6 h-6 group-hover:-translate-y-1 transition-transform duration-300" />
-        
+
         {/* Button glow */}
         <div className="absolute inset-0 rounded-2xl bg-[#3988EA]/50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
       </button>
     </footer>
-  )
+  );
 }
