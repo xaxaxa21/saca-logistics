@@ -15,6 +15,7 @@ import { ContactSection } from "@/components/landing/contact";
 import { Footer } from "@/components/landing/footer";
 import { BufferTransition } from "@/components/landing/buffer-transition";
 import { CinematicVideoBlock } from "@/components/landing/cinematic-video-block";
+import { DashboardPreviewSection } from "@/components/landing/dashboard-preview";
 import GlobeDemo from "@/components/globe-demo";
 import WServicesSection from "@/components/landing/wservicesx";
 
@@ -141,6 +142,7 @@ export default function Home() {
             </div>
 
             <InfrastructureSection />
+            <DashboardPreviewSection />
 
             <ContactSection />
             <Footer />

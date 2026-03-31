@@ -181,13 +181,13 @@ export function Footer() {
               {/* Contact Info */}
               <div className="space-y-4">
                 <a
-                  href="mailto:contact@sacalogistics.com"
+                  href="mailto:office@sacalogistics.com"
                   className="group flex items-center gap-4 text-white/60 hover:text-white transition-colors"
                 >
                   <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-[#3988EA]/20 transition-colors">
                     <Mail className="w-5 h-5" />
                   </div>
-                  <span className="text-sm">contact@sacaexperts.ro</span>
+                  <span className="text-sm">office@sacaexperts.ro</span>
                 </a>
                 <a
                   href="tel:+40 725 193 181"

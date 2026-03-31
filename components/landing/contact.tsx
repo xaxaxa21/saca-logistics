@@ -29,7 +29,7 @@ const contactInfo = [
   },
   { icon: MapPin, label: "Address", value: "Bucharest, Romania" },
   { icon: Phone, label: "Phone", value: "+40 725 193 181" },
-  { icon: Mail, label: "Email", value: "contact@sacaexperts.ro" },
+  { icon: Mail, label: "Email", value: "office@sacaexperts.ro" },
   { icon: Clock, label: "Hours", value: "Mon - Fri: 8:00 - 19:00" },
 ];
 

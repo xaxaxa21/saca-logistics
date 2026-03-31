@@ -1,11 +1,31 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { createPortal } from "react-dom";
-import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Anchor, ArrowRight, Globe, Plane, Ship, Truck } from "lucide-react";
+import {
+  Anchor,
+  ArrowRight,
+  Camera,
+  FileText,
+  Globe,
+  Megaphone,
+  Monitor,
+  Plane,
+  Search,
+  Ship,
+  ShoppingCart,
+  Target,
+  Truck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   getServiceCardById,
@@ -17,13 +37,14 @@ import { useServiceHubNavOptional } from "@/components/landing/service-hub-nav-c
 
 gsap.registerPlugin(ScrollTrigger);
 
-/** Hub node id → shared services card id (null = keep dedicated modal) */
+/** Hub node id → shared services card id (null = dedicated modal) */
 const HUB_TO_SERVICE_CARD_ID: Record<number, ServiceCardData["id"] | null> = {
   1: null,
   2: "fulfillment",
   3: "workforce",
   4: "value-added",
   5: "3pl",
+  6: null,
 };
 
 type ServiceItem = {
@@ -34,6 +55,13 @@ type ServiceItem = {
   capabilities: string[];
   color: string;
   image: string;
+};
+
+type NodeLayout = {
+  style: CSSProperties;
+  labelClass: string;
+  bubbleClass: string;
+  innerClass: string;
 };
 
 const SERVICES_DATA: ServiceItem[] = [
@@ -106,7 +134,7 @@ const SERVICES_DATA: ServiceItem[] = [
   },
   {
     id: 5,
-    title: "3PL Logistics — Retail & FMCG",
+    title: "3PL Logistics",
     eyebrow: "Retail & FMCG",
     intro:
       "Our 3PL services provide structured warehouse operations designed to ensure accuracy, reliability and scalability.",
@@ -121,6 +149,24 @@ const SERVICES_DATA: ServiceItem[] = [
     ],
     color: "#60A5FA",
     image: "/3pl.png",
+  },
+  {
+    id: 6,
+    title: "Website & Digital Growth",
+    eyebrow: "Launch & scale",
+    intro:
+      "We build the digital layer around the product: custom launch pages, commerce-ready experiences and performance campaigns that help a product reach the market with speed.",
+    capabilities: [
+      "Custom-coded landing pages for launches and validation",
+      "Full e-commerce builds and staged migrations to mature platforms",
+      "Google Ads and SEO execution tied to commercial goals",
+      "Social media management, content creation and UGC production",
+      "Video ads, creative assets and campaign support",
+      "Physical branding support such as flyers and catalogues",
+    ],
+    color: "#06B6D4",
+    image:
+      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
   },
 ];
 
@@ -145,13 +191,128 @@ const GLOBAL_TRANSPORT_MODES = [
   },
 ];
 
-const DESKTOP_POSITIONS = [
-  { top: "12%", left: "50%", transform: "translate(-50%, 0)" },
-  { top: "34%", left: "81%", transform: "translate(-50%, -50%)" },
-  { top: "76%", left: "70%", transform: "translate(-50%, -50%)" },
-  { top: "68%", left: "24%", transform: "translate(-50%, -50%)" }, // Value Added Services
-  { top: "34%", left: "19%", transform: "translate(-50%, -50%)" },
+const DIGITAL_GROWTH_FEATURES = [
+  {
+    icon: Monitor,
+    title: "Launch Pages",
+    text: "Custom-coded pages built fast for product tests, pre-launches and high-intent campaigns.",
+  },
+  {
+    icon: ShoppingCart,
+    title: "Commerce Builds",
+    text: "From temporary launch sites to full online stores and later platform migrations.",
+  },
+  {
+    icon: Megaphone,
+    title: "Demand Generation",
+    text: "Google Ads, social support and campaign structures designed around real commercial intent.",
+  },
+  {
+    icon: Search,
+    title: "SEO Foundations",
+    text: "On-page SEO, site structure and search visibility designed to support scale over time.",
+  },
+  {
+    icon: Camera,
+    title: "Creative & UGC",
+    text: "Content creation, UGC-style assets, social media management and video ad production.",
+  },
+  {
+    icon: FileText,
+    title: "Brand Materials",
+    text: "Physical brand support including flyers, catalogues and launch collateral when needed.",
+  },
 ];
+
+const DESKTOP_NODE_LAYOUT: Record<number, NodeLayout> = {
+  1: {
+    style: { top: "9%", left: "50%", transform: "translate(-50%, 0)" },
+    labelClass:
+      "-top-16 left-1/2 -translate-x-1/2 w-56 text-center whitespace-normal",
+    bubbleClass: "h-24 w-24 p-[8px]",
+    innerClass: "inset-[8px]",
+  },
+  2: {
+    style: { top: "28%", left: "19%", transform: "translate(-50%, -50%)" },
+    labelClass:
+      "left-[calc(100%+18px)] top-1/2 -translate-y-1/2 w-48 text-left whitespace-normal",
+    bubbleClass: "h-24 w-24 p-[8px]",
+    innerClass: "inset-[8px]",
+  },
+  3: {
+    style: { top: "28%", left: "81%", transform: "translate(-50%, -50%)" },
+    labelClass:
+      "right-[calc(100%+18px)] top-1/2 -translate-y-1/2 w-48 text-right whitespace-normal",
+    bubbleClass: "h-24 w-24 p-[8px]",
+    innerClass: "inset-[8px]",
+  },
+  4: {
+    style: { top: "64%", left: "16%", transform: "translate(-50%, -50%)" },
+    labelClass:
+      "top-[calc(100%+16px)] left-1/2 -translate-x-1/2 w-56 text-center whitespace-normal",
+    bubbleClass: "h-24 w-24 p-[8px]",
+    innerClass: "inset-[8px]",
+  },
+  5: {
+    style: { top: "64%", left: "84%", transform: "translate(-50%, -50%)" },
+    labelClass:
+      "top-[calc(100%+16px)] left-1/2 -translate-x-1/2 w-40 text-center whitespace-normal",
+    bubbleClass: "h-24 w-24 p-[8px]",
+    innerClass: "inset-[8px]",
+  },
+  6: {
+    style: { top: "79%", left: "50%", transform: "translate(-50%, -50%)" },
+    labelClass:
+      "top-[calc(100%+16px)] left-1/2 -translate-x-1/2 w-52 text-center whitespace-normal",
+    bubbleClass: "h-20 w-20 p-[7px]",
+    innerClass: "inset-[7px]",
+  },
+};
+
+const MOBILE_NODE_LAYOUT: Record<number, NodeLayout> = {
+  1: {
+    style: { top: "34px", left: "50%", transform: "translateX(-50%)" },
+    labelClass:
+      "-top-10 left-1/2 -translate-x-1/2 w-56 text-center whitespace-normal",
+    bubbleClass: "h-16 w-16 p-[5px]",
+    innerClass: "inset-[5px]",
+  },
+  2: {
+    style: { top: "162px", left: "18%", transform: "translateX(-50%)" },
+    labelClass:
+      "left-[calc(100%+12px)] top-1/2 -translate-y-1/2 w-32 text-left whitespace-normal",
+    bubbleClass: "h-14 w-14 p-[4px]",
+    innerClass: "inset-[4px]",
+  },
+  3: {
+    style: { top: "162px", left: "82%", transform: "translateX(-50%)" },
+    labelClass:
+      "right-[calc(100%+12px)] top-1/2 -translate-y-1/2 w-32 text-right whitespace-normal",
+    bubbleClass: "h-14 w-14 p-[4px]",
+    innerClass: "inset-[4px]",
+  },
+  4: {
+    style: { top: "414px", left: "18%", transform: "translateX(-50%)" },
+    labelClass:
+      "top-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-44 text-center whitespace-normal",
+    bubbleClass: "h-14 w-14 p-[4px]",
+    innerClass: "inset-[4px]",
+  },
+  5: {
+    style: { top: "414px", left: "82%", transform: "translateX(-50%)" },
+    labelClass:
+      "top-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-28 text-center whitespace-normal",
+    bubbleClass: "h-14 w-14 p-[4px]",
+    innerClass: "inset-[4px]",
+  },
+  6: {
+    style: { top: "560px", left: "50%", transform: "translateX(-50%)" },
+    labelClass:
+      "bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-44 text-center whitespace-normal",
+    bubbleClass: "h-14 w-14 p-[4px]",
+    innerClass: "inset-[4px]",
+  },
+};
 
 function isCoarsePointer() {
   if (typeof window === "undefined") return false;
@@ -163,30 +324,11 @@ function splitTitle(text: string) {
 }
 
 /** True when enough of the hub section is on-screen to open a modal from nav */
-function sectionSufficientlyVisible(root: HTMLElement): boolean {
+function sectionSufficientlyVisible(root: HTMLElement) {
   const r = root.getBoundingClientRect();
   const vh = window.innerHeight;
   const visibleHeight = Math.min(r.bottom, vh) - Math.max(r.top, 0);
   return visibleHeight > 0 && visibleHeight / vh >= 0.12;
-}
-
-function HubIcon() {
-  return (
-    <svg
-      className="h-5 w-5 text-white"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M3 7.5 12 3l9 4.5M4.5 9.5V16L12 20l7.5-4V9.5M12 20v-8"
-      />
-    </svg>
-  );
 }
 
 function CloseIcon() {
@@ -208,15 +350,108 @@ function CloseIcon() {
   );
 }
 
+function ServiceNode({
+  service,
+  layout,
+  className,
+  onClick,
+}: {
+  service: ServiceItem;
+  layout: NodeLayout;
+  className: string;
+  onClick: (id: number) => void;
+}) {
+  return (
+    <button
+      onClick={() => onClick(service.id)}
+      className={`absolute rounded-full group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-4 ${className}`}
+      style={layout.style}
+      aria-label={`View ${service.title} details`}
+      type="button"
+    >
+      <span
+        className={`absolute text-sm font-medium leading-tight text-[#334155] transition-colors group-hover:text-[#2563EB] ${layout.labelClass}`}
+      >
+        <span className="block text-[10px] font-semibold uppercase tracking-[0.22em] text-[#124D95]/65">
+          {service.eyebrow}
+        </span>
+        <span className="mt-1 block">{service.title}</span>
+      </span>
+
+      <div
+        className={`relative rounded-full transition-all duration-300 group-hover:scale-105 ${layout.bubbleClass}`}
+      >
+        <span
+          className="absolute inset-0 rounded-full blur-xl transition-opacity duration-300 group-hover:opacity-100"
+          style={{ background: `${service.color}30` }}
+        />
+        <span
+          className="absolute inset-0 rounded-full border"
+          style={{ borderColor: `${service.color}55` }}
+        />
+        <div className="absolute inset-0 overflow-hidden rounded-full border border-white/70 bg-white/85 shadow-[0_18px_40px_rgba(15,23,42,0.10)] backdrop-blur-xl">
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `radial-gradient(circle at 28% 24%, ${service.color}66, transparent 35%), linear-gradient(135deg, #eff6ff 0%, #ffffff 45%, #dbeafe 100%)`,
+            }}
+          />
+          <div className="absolute inset-0 opacity-[0.14] [background-image:linear-gradient(transparent_0%,transparent_47%,rgba(18,77,149,0.9)_48%,transparent_49%,transparent_100%)] [background-size:100%_16px]" />
+          <div
+            className={`absolute overflow-hidden rounded-full border border-white/70 bg-white ${layout.innerClass}`}
+          >
+            <img
+              src={service.image}
+              alt={service.title}
+              className="h-full w-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function EndCustomerNode({ mobile = false }: { mobile?: boolean }) {
+  return (
+    <div
+      className={`srv-end-node absolute ${
+        mobile
+          ? "left-1/2 top-[725px] -translate-x-1/2"
+          : "left-1/2 top-[93%] -translate-x-1/2"
+      }`}
+      aria-hidden="true"
+    >
+      <div className="relative flex flex-col items-center">
+        <span className="srv-end-customer-ring absolute inset-0 rounded-full border border-[#06B6D4]/35" />
+        <span className="srv-end-customer-ring absolute inset-[-10px] rounded-full border border-[#60A5FA]/20" />
+
+        <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-[#2563EB]/25 bg-white/90 shadow-[0_22px_48px_rgba(15,23,42,0.14)] backdrop-blur-xl sm:h-24 sm:w-24">
+          <div className="absolute inset-[8px] rounded-full bg-[radial-gradient(circle_at_30%_25%,rgba(37,99,235,0.22),transparent_34%),linear-gradient(135deg,#ffffff_0%,#eff6ff_52%,#dbeafe_100%)]" />
+          <div className="absolute inset-[14px] rounded-full border border-white/80 bg-white shadow-inner" />
+          <Target className="relative z-10 h-8 w-8 text-[#124D95] sm:h-9 sm:w-9" />
+        </div>
+
+        <div className="mt-3 text-center">
+          <div className="text-[10px] font-semibold uppercase tracking-[0.26em] text-[#124D95]/65">
+            Final destination
+          </div>
+          <div className="mt-1 text-sm font-semibold text-[#0F172A] sm:text-base">
+            End Customer
+          </div>
+          <div className="mt-1 text-xs leading-5 text-[#475569]">
+            The final operational and commercial endpoint.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ServicesSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
   const desktopHubRef = useRef<HTMLDivElement>(null);
-  const desktopNodesRef = useRef<(HTMLButtonElement | null)[]>([]);
-  const desktopLinesRef = useRef<(SVGPathElement | null)[]>([]);
   const mobileHubRef = useRef<HTMLDivElement>(null);
-  const mobileNodesRef = useRef<(HTMLButtonElement | null)[]>([]);
-  const mobileLinesRef = useRef<(SVGLineElement | null)[]>([]);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const modalOverlayRef = useRef<HTMLDivElement>(null);
   const modalPanelRef = useRef<HTMLDivElement>(null);
@@ -225,14 +460,12 @@ export default function ServicesSection() {
   const [reduceMotion, setReduceMotion] = useState(false);
   const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
-  /* Resolve portal target after mount so modal escapes ScrollSmoother's transform */
   useEffect(() => {
     setPortalRoot(document.body);
   }, []);
 
   const hubNav = useServiceHubNavOptional();
 
-  /* Open the correct hub modal after header submenu navigation (scroll + pending id) */
   useEffect(() => {
     if (!hubNav || hubNav.pendingServiceId === null) return;
     const pending = hubNav.pendingServiceId;
@@ -260,6 +493,7 @@ export default function ServicesSection() {
       },
       { threshold: [0, 0.12, 0.2, 0.35] },
     );
+
     io.observe(root);
     return () => io.disconnect();
   }, [hubNav, hubNav?.pendingServiceId]);
@@ -347,7 +581,6 @@ export default function ServicesSection() {
     if (!root) return;
 
     const coarse = isCoarsePointer();
-
     let sectionObserver: IntersectionObserver | null = null;
 
     const ctx = gsap.context(() => {
@@ -364,15 +597,24 @@ export default function ServicesSection() {
         gsap.set(q(".srv-sub"), { opacity: 1, y: 0, filter: "blur(0px)" });
         gsap.set(q(".srv-rule"), { scaleX: 1 });
         gsap.set(q(".srv-desktop-hub"), { opacity: 1, scale: 1, y: 0 });
+        gsap.set(q(".srv-mobile-hub"), { opacity: 1, scale: 1, y: 0 });
         gsap.set(q(".srv-desktop-node"), { opacity: 1, scale: 1, y: 0 });
+        gsap.set(q(".srv-mobile-node"), { opacity: 1, scale: 1, y: 0 });
+        gsap.set(q(".srv-end-node"), { opacity: 1, scale: 1, y: 0 });
         gsap.set(q(".srv-desktop-line"), {
           opacity: 0.42,
           strokeDashoffset: 0,
         });
-        gsap.set(q(".srv-mobile-hub"), { opacity: 1, scale: 1, y: 0 });
-        gsap.set(q(".srv-mobile-node"), { opacity: 1, scale: 1, y: 0 });
+        gsap.set(q(".srv-desktop-end-line"), {
+          opacity: 0.72,
+          strokeDashoffset: 0,
+        });
         gsap.set(q(".srv-mobile-line"), {
           opacity: 0.58,
+          strokeDashoffset: 0,
+        });
+        gsap.set(q(".srv-mobile-end-line"), {
+          opacity: 0.72,
           strokeDashoffset: 0,
         });
         return;
@@ -409,21 +651,16 @@ export default function ServicesSection() {
         scale: 0.92,
       });
 
-      gsap.set(q(".srv-desktop-node"), {
-        opacity: 0,
-        y: 22,
-        scale: 0.8,
-      });
-
-      gsap.set(q(".srv-desktop-line"), {
-        opacity: 0,
-        strokeDashoffset: 36,
-      });
-
       gsap.set(q(".srv-mobile-hub"), {
         opacity: 0,
         y: 14,
         scale: 0.78,
+      });
+
+      gsap.set(q(".srv-desktop-node"), {
+        opacity: 0,
+        y: 22,
+        scale: 0.8,
       });
 
       gsap.set(q(".srv-mobile-node"), {
@@ -432,14 +669,32 @@ export default function ServicesSection() {
         scale: 0.74,
       });
 
+      gsap.set(q(".srv-end-node"), {
+        opacity: 0,
+        y: 18,
+        scale: 0.84,
+      });
+
+      gsap.set(q(".srv-desktop-line"), {
+        opacity: 0,
+        strokeDashoffset: 36,
+      });
+
+      gsap.set(q(".srv-desktop-end-line"), {
+        opacity: 0,
+        strokeDashoffset: 40,
+      });
+
       gsap.set(q(".srv-mobile-line"), {
         opacity: 0,
         strokeDashoffset: 80,
       });
 
-      /* Use IntersectionObserver instead of ScrollTrigger for the entrance
-         animation — ScrollSmoother applies transforms to the content container
-         which can desync ScrollTrigger positions on desktop. IO is immune. */
+      gsap.set(q(".srv-mobile-end-line"), {
+        opacity: 0,
+        strokeDashoffset: 90,
+      });
+
       const introTl = gsap.timeline({
         defaults: { ease: "power3.out" },
         paused: true,
@@ -511,10 +766,10 @@ export default function ServicesSection() {
           {
             opacity: 0.42,
             strokeDashoffset: 0,
-            duration: 0.7,
-            stagger: 0.05,
+            duration: 0.72,
+            stagger: 0.03,
           },
-          0.5,
+          0.48,
         )
         .to(
           q(".srv-desktop-node"),
@@ -522,11 +777,32 @@ export default function ServicesSection() {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: 0.55,
-            stagger: 0.08,
+            duration: 0.58,
+            stagger: 0.06,
             ease: "back.out(1.6)",
           },
-          0.62,
+          0.6,
+        )
+        .to(
+          q(".srv-desktop-end-line"),
+          {
+            opacity: 0.72,
+            strokeDashoffset: 0,
+            duration: 0.68,
+            stagger: 0.03,
+          },
+          0.82,
+        )
+        .to(
+          q(".srv-end-node"),
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.58,
+            ease: "back.out(1.6)",
+          },
+          0.9,
         )
         .to(
           q(".srv-mobile-hub"),
@@ -545,7 +821,7 @@ export default function ServicesSection() {
             opacity: 0.58,
             strokeDashoffset: 0,
             duration: 0.8,
-            stagger: 0.04,
+            stagger: 0.03,
           },
           0.5,
         )
@@ -557,19 +833,29 @@ export default function ServicesSection() {
             scale: 1,
             duration: 0.56,
             stagger: {
-              each: 0.08,
+              each: 0.06,
               from: "center",
             },
             ease: "back.out(1.6)",
           },
           0.62,
+        )
+        .to(
+          q(".srv-mobile-end-line"),
+          {
+            opacity: 0.72,
+            strokeDashoffset: 0,
+            duration: 0.7,
+            stagger: 0.03,
+          },
+          0.86,
         );
 
       if (!coarse) {
         q(".srv-desktop-node").forEach((node, i) => {
           gsap.to(node, {
             y: i % 2 === 0 ? -7 : 7,
-            duration: 3.2 + i * 0.25,
+            duration: 3.1 + i * 0.18,
             repeat: -1,
             yoyo: true,
             ease: "sine.inOut",
@@ -591,11 +877,28 @@ export default function ServicesSection() {
       q(".srv-mobile-node").forEach((node, i) => {
         gsap.to(node, {
           y: i % 2 === 0 ? -5 : 5,
-          duration: 2.6 + i * 0.2,
+          duration: 2.5 + i * 0.16,
           repeat: -1,
           yoyo: true,
           ease: "sine.inOut",
         });
+      });
+
+      gsap.to(q(".srv-end-node"), {
+        y: -6,
+        duration: 3.2,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+
+      gsap.to(q(".srv-end-customer-ring"), {
+        scale: 1.22,
+        opacity: 0,
+        duration: 2.4,
+        repeat: -1,
+        stagger: 0.8,
+        ease: "power1.out",
       });
 
       gsap.to(q(".srv-desktop-line"), {
@@ -605,9 +908,23 @@ export default function ServicesSection() {
         ease: "none",
       });
 
+      gsap.to(q(".srv-desktop-end-line"), {
+        strokeDashoffset: -20,
+        duration: 2.3,
+        repeat: -1,
+        ease: "none",
+      });
+
       gsap.to(q(".srv-mobile-line"), {
         strokeDashoffset: -16,
         duration: 2.3,
+        repeat: -1,
+        ease: "none",
+      });
+
+      gsap.to(q(".srv-mobile-end-line"), {
+        strokeDashoffset: -18,
+        duration: 2.1,
         repeat: -1,
         ease: "none",
       });
@@ -645,7 +962,7 @@ export default function ServicesSection() {
 
     let cleanupPointer = () => {};
 
-    if (!reduceMotion && !coarse && spotlightRef.current) {
+    if (!reduceMotion && !isCoarsePointer() && spotlightRef.current) {
       const spotX = gsap.quickTo(spotlightRef.current, "x", {
         duration: 0.55,
         ease: "power3.out",
@@ -738,7 +1055,7 @@ export default function ServicesSection() {
       <section
         id="services"
         ref={sectionRef}
-        className="relative min-h-screen w-full overflow-hidden bg-[#FAF8F5] py-16 md:py-24"
+        className="relative min-h-screen w-full overflow-hidden bg-[#FAF8F5] py-16 pb-28 md:py-24 md:pb-36"
       >
         <div className="absolute inset-0 bg-[radial-gradient(900px_circle_at_50%_18%,rgba(37,99,235,0.10),transparent_44%),radial-gradient(700px_circle_at_12%_20%,rgba(57,136,234,0.06),transparent_28%),linear-gradient(180deg,#FAF8F5_0%,#F5F7FB_52%,#FAF8F5_100%)] pointer-events-none" />
         <div className="pointer-events-none absolute inset-0 opacity-[0.04] [background-image:linear-gradient(rgba(18,77,149,0.12)_1px,transparent_1px),linear-gradient(90deg,rgba(18,77,149,0.12)_1px,transparent_1px)] [background-size:58px_58px]" />
@@ -755,10 +1072,7 @@ export default function ServicesSection() {
               Service architecture
             </div>
 
-            <h2
-              ref={titleRef}
-              className="mt-5 mb-6 text-center text-[2.5rem] font-semibold leading-[1.02] tracking-[-0.05em] text-[#0F172A] md:mb-8 sm:text-[3rem] md:text-[4.6rem]"
-            >
+            <h2 className="mt-5 mb-6 text-center text-[2.5rem] font-semibold leading-[1.02] tracking-[-0.05em] text-[#0F172A] md:mb-8 sm:text-[3rem] md:text-[4.6rem]">
               <span className="sr-only">What can we do for you</span>
               <span
                 aria-hidden="true"
@@ -780,77 +1094,54 @@ export default function ServicesSection() {
             </h2>
 
             <p className="srv-sub mx-auto max-w-2xl text-sm leading-7 text-[#475569] sm:text-base lg:text-lg">
-              Explore the five core service pillars around a single operational
-              hub. Each node opens a focused service panel with room for richer
-              content later.
+              Explore six coordinated service pillars around one operational
+              hub. The full flow moves from logistics and launch support to one
+              shared outcome: reaching the end customer.
             </p>
 
             <div className="srv-rule mx-auto mt-7 h-px w-full max-w-md bg-[linear-gradient(90deg,transparent,rgba(18,77,149,0.58),rgba(96,165,250,0.55),transparent)]" />
           </div>
 
           <div className="srv-network-parallax">
-            <div className="relative mx-auto mt-12 hidden aspect-square w-full max-w-4xl md:mt-16 md:block">
+            <div className="relative mx-auto mt-12 hidden aspect-[1/1.14] w-full max-w-5xl md:mt-16 md:block">
               <svg
                 className="absolute inset-0 h-full w-full pointer-events-none"
                 viewBox="0 0 100 100"
                 preserveAspectRatio="none"
                 aria-hidden="true"
               >
+                <defs>
+                  <linearGradient
+                    id="desktopHubGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="#124D95" stopOpacity="0.6" />
+                    <stop offset="55%" stopColor="#3B82F6" stopOpacity="0.8" />
+                    <stop
+                      offset="100%"
+                      stopColor="#60A5FA"
+                      stopOpacity="0.55"
+                    />
+                  </linearGradient>
+                  <linearGradient
+                    id="desktopClientGradient"
+                    x1="50%"
+                    y1="0%"
+                    x2="50%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.75" />
+                    <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.9" />
+                  </linearGradient>
+                </defs>
+
                 <path
-                  ref={(el) => {
-                    desktopLinesRef.current[0] = el;
-                  }}
                   className="srv-desktop-line"
-                  d="M50 50 Q50 34 50 12"
-                  stroke="#3988EA"
-                  strokeWidth="0.22"
-                  fill="none"
-                  strokeDasharray="1.2 1.2"
-                  strokeLinecap="round"
-                />
-                <path
-                  ref={(el) => {
-                    desktopLinesRef.current[1] = el;
-                  }}
-                  className="srv-desktop-line"
-                  d="M50 50 Q64 40 81 34"
-                  stroke="#2563EB"
-                  strokeWidth="0.22"
-                  fill="none"
-                  strokeDasharray="1.2 1.2"
-                  strokeLinecap="round"
-                />
-                <path
-                  ref={(el) => {
-                    desktopLinesRef.current[2] = el;
-                  }}
-                  className="srv-desktop-line"
-                  d="M50 50 Q60 64 70 76"
-                  stroke="#60A5FA"
-                  strokeWidth="0.22"
-                  fill="none"
-                  strokeDasharray="1.2 1.2"
-                  strokeLinecap="round"
-                />
-                <path
-                  ref={(el) => {
-                    desktopLinesRef.current[3] = el;
-                  }}
-                  className="srv-desktop-line"
-                  d="M50 50 Q40 64 30 76"
-                  stroke="#1D4ED8"
-                  strokeWidth="0.22"
-                  fill="none"
-                  strokeDasharray="1.2 1.2"
-                  strokeLinecap="round"
-                />
-                <path
-                  ref={(el) => {
-                    desktopLinesRef.current[4] = el;
-                  }}
-                  className="srv-desktop-line"
-                  d="M50 50 Q36 40 19 34"
-                  stroke="#124D95"
+                  d="M50 50 Q50 31 50 11"
+                  stroke="url(#desktopHubGradient)"
                   strokeWidth="0.22"
                   fill="none"
                   strokeDasharray="1.2 1.2"
@@ -858,23 +1149,97 @@ export default function ServicesSection() {
                 />
                 <path
                   className="srv-desktop-line"
-                  d="M19 34 Q50 12 81 34"
-                  stroke="#3988EA"
+                  d="M50 50 Q35 41 19 28"
+                  stroke="url(#desktopHubGradient)"
+                  strokeWidth="0.22"
+                  fill="none"
+                  strokeDasharray="1.2 1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  className="srv-desktop-line"
+                  d="M50 50 Q65 41 81 28"
+                  stroke="url(#desktopHubGradient)"
+                  strokeWidth="0.22"
+                  fill="none"
+                  strokeDasharray="1.2 1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  className="srv-desktop-line"
+                  d="M50 50 Q34 59 16 64"
+                  stroke="url(#desktopHubGradient)"
+                  strokeWidth="0.22"
+                  fill="none"
+                  strokeDasharray="1.2 1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  className="srv-desktop-line"
+                  d="M50 50 Q66 59 84 64"
+                  stroke="url(#desktopHubGradient)"
+                  strokeWidth="0.22"
+                  fill="none"
+                  strokeDasharray="1.2 1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  className="srv-desktop-line"
+                  d="M50 50 Q42 67 36 79"
+                  stroke="url(#desktopHubGradient)"
+                  strokeWidth="0.22"
+                  fill="none"
+                  strokeDasharray="1.2 1.2"
+                  strokeLinecap="round"
+                />
+
+                <path
+                  className="srv-desktop-line"
+                  d="M19 28 Q50 10 81 28"
+                  stroke="url(#desktopHubGradient)"
                   strokeWidth="0.14"
                   fill="none"
                   strokeDasharray="0.9 1.3"
                   strokeLinecap="round"
-                  opacity="0.25"
+                  opacity="0.22"
                 />
                 <path
                   className="srv-desktop-line"
-                  d="M30 76 Q50 86 70 76"
-                  stroke="#3988EA"
+                  d="M16 64 Q26 74 36 79"
+                  stroke="url(#desktopHubGradient)"
                   strokeWidth="0.14"
                   fill="none"
                   strokeDasharray="0.9 1.3"
                   strokeLinecap="round"
                   opacity="0.2"
+                />
+
+                <path
+                  className="srv-desktop-end-line"
+                  d="M16 64 Q28 82 50 93"
+                  stroke="url(#desktopClientGradient)"
+                  strokeWidth="0.24"
+                  fill="none"
+                  strokeDasharray="1.2 1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  className="srv-desktop-end-line"
+                  d="M84 64 Q72 82 50 93"
+                  stroke="url(#desktopClientGradient)"
+                  strokeWidth="0.24"
+                  fill="none"
+                  strokeDasharray="1.2 1.2"
+                  strokeLinecap="round"
+                />
+                <path
+                  className="srv-desktop-end-line"
+                  d="M36 79 Q41 88 50 93"
+                  stroke="url(#desktopClientGradient)"
+                  strokeWidth="0.24"
+                  fill="none"
+                  strokeDasharray="1.2 1.2"
+                  strokeLinecap="round"
                 />
               </svg>
 
@@ -885,75 +1250,27 @@ export default function ServicesSection() {
                 <img
                   src="/logo_trans.svg"
                   alt="Saca Logistics Logo"
-                  className="max-w-[110px] max-h-[110px]"
+                  className="max-h-[110px] max-w-[110px]"
                   style={{ display: "block", margin: "auto" }}
                 />
               </div>
 
-              {SERVICES_DATA.map((service, i) => (
-                <button
+              {SERVICES_DATA.map((service) => (
+                <ServiceNode
                   key={service.id}
-                  ref={(el) => {
-                    desktopNodesRef.current[i] = el;
-                  }}
-                  onClick={() => setActiveService(service.id)}
-                  className="srv-desktop-node absolute rounded-full group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-4"
-                  style={DESKTOP_POSITIONS[i]}
-                  aria-label={`View ${service.title} details`}
-                  type="button"
-                >
-                  <span
-                    className={`absolute whitespace-nowrap text-sm font-medium text-[#334155] transition-colors group-hover:text-[#2563EB] ${
-                      i === 0
-                        ? "-top-14 left-1/2 -translate-x-1/2 text-center"
-                        : i === 1
-                          ? "right-[calc(100%+16px)] top-1/2 -translate-y-1/2 text-right"
-                          : i === 2
-                            ? "right-[calc(100%+16px)] top-1/2 -translate-y-1/2 text-right"
-                            : i === 3
-                              ? "left-[calc(100%+16px)] top-1/2 -translate-y-1/2 text-left"
-                              : "left-[calc(100%+16px)] top-1/2 -translate-y-1/2 text-left"
-                    }`}
-                  >
-                    <span className="block text-[10px] font-semibold uppercase tracking-[0.22em] text-[#124D95]/65">
-                      {service.eyebrow}
-                    </span>
-                    <span className="mt-1 block">{service.title}</span>
-                  </span>
-
-                  <div className="relative h-24 w-24 rounded-full p-[8px] transition-all duration-300 group-hover:scale-105">
-                    <span
-                      className="absolute inset-0 rounded-full blur-xl transition-opacity duration-300 group-hover:opacity-100"
-                      style={{ background: `${service.color}30` }}
-                    />
-                    <span
-                      className="absolute inset-0 rounded-full border"
-                      style={{ borderColor: `${service.color}55` }}
-                    />
-                    <div className="absolute inset-[8px] overflow-hidden rounded-full border border-white/70 bg-white/85 shadow-[0_18px_40px_rgba(15,23,42,0.10)] backdrop-blur-xl">
-                      <div
-                        className="absolute inset-0"
-                        style={{
-                          background: `radial-gradient(circle at 28% 24%, ${service.color}66, transparent 35%), linear-gradient(135deg, #eff6ff 0%, #ffffff 45%, #dbeafe 100%)`,
-                        }}
-                      />
-                      <div className="absolute inset-0 opacity-[0.14] [background-image:linear-gradient(transparent_0%,transparent_47%,rgba(18,77,149,0.9)_48%,transparent_49%,transparent_100%)] [background-size:100%_16px]" />
-                      <div className="absolute inset-[1px] overflow-hidden rounded-full border border-white/70 bg-white">
-                        <img
-                          src={service.image}
-                          alt={service.title}
-                          className="h-full w-full object-cover"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </button>
+                  service={service}
+                  layout={DESKTOP_NODE_LAYOUT[service.id]}
+                  className="srv-desktop-node"
+                  onClick={setActiveService}
+                />
               ))}
+
+              <EndCustomerNode />
             </div>
 
             <div
               className="relative mt-10 w-full md:hidden"
-              style={{ height: "590px" }}
+              style={{ height: "860px" }}
             >
               <svg
                 className="absolute inset-0 h-full w-full pointer-events-none"
@@ -976,73 +1293,50 @@ export default function ServicesSection() {
                       stopOpacity="0.55"
                     />
                   </linearGradient>
+                  <linearGradient
+                    id="mobileClientGradient"
+                    x1="50%"
+                    y1="0%"
+                    x2="50%"
+                    y2="100%"
+                  >
+                    <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.78" />
+                    <stop
+                      offset="100%"
+                      stopColor="#06B6D4"
+                      stopOpacity="0.92"
+                    />
+                  </linearGradient>
                 </defs>
 
                 <line
-                  ref={(el) => {
-                    mobileLinesRef.current[0] = el;
-                  }}
                   className="srv-mobile-line"
                   x1="50%"
-                  y1="278"
+                  y1="304"
                   x2="50%"
-                  y2="78"
+                  y2="74"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1.5"
                   strokeDasharray="6 4"
                   opacity="0"
                 />
                 <line
-                  ref={(el) => {
-                    mobileLinesRef.current[1] = el;
-                  }}
                   className="srv-mobile-line"
                   x1="50%"
-                  y1="292"
+                  y1="304"
                   x2="18%"
-                  y2="202"
+                  y2="190"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1.5"
                   strokeDasharray="6 4"
                   opacity="0"
                 />
                 <line
-                  ref={(el) => {
-                    mobileLinesRef.current[2] = el;
-                  }}
                   className="srv-mobile-line"
                   x1="50%"
-                  y1="292"
+                  y1="304"
                   x2="82%"
-                  y2="202"
-                  stroke="url(#mobileLineGradient)"
-                  strokeWidth="1.5"
-                  strokeDasharray="6 4"
-                  opacity="0"
-                />
-                <line
-                  ref={(el) => {
-                    mobileLinesRef.current[3] = el;
-                  }}
-                  className="srv-mobile-line"
-                  x1="50%"
-                  y1="308"
-                  x2="22%"
-                  y2="428"
-                  stroke="url(#mobileLineGradient)"
-                  strokeWidth="1.5"
-                  strokeDasharray="6 4"
-                  opacity="0"
-                />
-                <line
-                  ref={(el) => {
-                    mobileLinesRef.current[4] = el;
-                  }}
-                  className="srv-mobile-line"
-                  x1="50%"
-                  y1="308"
-                  x2="78%"
-                  y2="428"
+                  y2="190"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1.5"
                   strokeDasharray="6 4"
@@ -1051,9 +1345,43 @@ export default function ServicesSection() {
                 <line
                   className="srv-mobile-line"
                   x1="50%"
-                  y1="78"
+                  y1="304"
                   x2="18%"
-                  y2="202"
+                  y2="430"
+                  stroke="url(#mobileLineGradient)"
+                  strokeWidth="1.5"
+                  strokeDasharray="6 4"
+                  opacity="0"
+                />
+                <line
+                  className="srv-mobile-line"
+                  x1="50%"
+                  y1="304"
+                  x2="82%"
+                  y2="430"
+                  stroke="url(#mobileLineGradient)"
+                  strokeWidth="1.5"
+                  strokeDasharray="6 4"
+                  opacity="0"
+                />
+                <line
+                  className="srv-mobile-line"
+                  x1="50%"
+                  y1="304"
+                  x2="34%"
+                  y2="588"
+                  stroke="url(#mobileLineGradient)"
+                  strokeWidth="1.5"
+                  strokeDasharray="6 4"
+                  opacity="0"
+                />
+
+                <line
+                  className="srv-mobile-line"
+                  x1="50%"
+                  y1="74"
+                  x2="18%"
+                  y2="190"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
@@ -1062,9 +1390,9 @@ export default function ServicesSection() {
                 <line
                   className="srv-mobile-line"
                   x1="50%"
-                  y1="78"
+                  y1="74"
                   x2="82%"
-                  y2="202"
+                  y2="190"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
@@ -1073,20 +1401,9 @@ export default function ServicesSection() {
                 <line
                   className="srv-mobile-line"
                   x1="18%"
-                  y1="202"
+                  y1="190"
                   x2="82%"
-                  y2="202"
-                  stroke="url(#mobileLineGradient)"
-                  strokeWidth="1"
-                  strokeDasharray="4 4"
-                  opacity="0"
-                />
-                <line
-                  className="srv-mobile-line"
-                  x1="22%"
-                  y1="428"
-                  x2="78%"
-                  y2="428"
+                  y2="190"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
@@ -1095,203 +1412,84 @@ export default function ServicesSection() {
                 <line
                   className="srv-mobile-line"
                   x1="18%"
-                  y1="202"
-                  x2="22%"
-                  y2="428"
+                  y1="430"
+                  x2="34%"
+                  y2="588"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
                   opacity="0"
                 />
+
                 <line
-                  className="srv-mobile-line"
+                  className="srv-mobile-end-line"
+                  x1="18%"
+                  y1="430"
+                  x2="50%"
+                  y2="742"
+                  stroke="url(#mobileClientGradient)"
+                  strokeWidth="1.6"
+                  strokeDasharray="6 4"
+                  opacity="0"
+                />
+                <line
+                  className="srv-mobile-end-line"
                   x1="82%"
-                  y1="202"
-                  x2="78%"
-                  y2="428"
-                  stroke="url(#mobileLineGradient)"
-                  strokeWidth="1"
-                  strokeDasharray="4 4"
+                  y1="430"
+                  x2="50%"
+                  y2="742"
+                  stroke="url(#mobileClientGradient)"
+                  strokeWidth="1.6"
+                  strokeDasharray="6 4"
+                  opacity="0"
+                />
+                <line
+                  className="srv-mobile-end-line"
+                  x1="34%"
+                  y1="588"
+                  x2="50%"
+                  y2="742"
+                  stroke="url(#mobileClientGradient)"
+                  strokeWidth="1.6"
+                  strokeDasharray="6 4"
+                  opacity="0"
+                />
+                <line
+                  className="srv-mobile-end-line"
+                  x1="66%"
+                  y1="588"
+                  x2="50%"
+                  y2="742"
+                  stroke="url(#mobileClientGradient)"
+                  strokeWidth="1.6"
+                  strokeDasharray="6 4"
                   opacity="0"
                 />
               </svg>
 
-              <button
-                ref={(el) => {
-                  mobileNodesRef.current[0] = el;
-                }}
-                className="srv-mobile-node absolute rounded-full group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-                style={{
-                  top: "38px",
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                }}
-                onClick={() => setActiveService(SERVICES_DATA[0].id)}
-                aria-label={`View ${SERVICES_DATA[0].title} details`}
-                type="button"
-              >
-                <span className="absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap text-[18px] font-semibold text-[#334155] transition-colors group-hover:text-[#2563EB]">
-                  Global Import & Export
-                </span>
-                <div className="relative h-16 w-16 rounded-full p-[5px]">
-                  <span
-                    className="absolute inset-0 rounded-full blur-lg"
-                    style={{ background: `${SERVICES_DATA[0].color}25` }}
-                  />
-                  <div className="absolute inset-0 rounded-full border border-[#2563EB]/35 bg-white/90 shadow-[0_16px_34px_rgba(15,23,42,0.10)]" />
-                  <div className="absolute inset-[1px] overflow-hidden rounded-full border border-white/70 bg-white">
-                    <img
-                      src="/globalimp.png"
-                      alt="Global Import & Export"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </div>
-              </button>
-
               <div
                 ref={mobileHubRef}
-                className="srv-mobile-hub absolute left-1/2 top-[236px] flex h-28 w-28 -translate-x-1/2 items-center justify-center opacity-0"
+                className="srv-mobile-hub absolute left-1/2 top-[264px] flex h-28 w-28 -translate-x-1/2 items-center justify-center opacity-0"
               >
                 <img
                   src="/logo_trans.svg"
                   alt="Saca Logistics Logo"
-                  className="max-w-[70px] max-h-[70px]"
+                  className="max-h-[70px] max-w-[70px]"
                   style={{ display: "block", margin: "auto" }}
                 />
               </div>
 
-              <button
-                ref={(el) => {
-                  mobileNodesRef.current[1] = el;
-                }}
-                className="srv-mobile-node absolute rounded-full group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-                style={{
-                  top: "162px",
-                  left: "18%",
-                  transform: "translateX(-50%)",
-                }}
-                onClick={() => setActiveService(SERVICES_DATA[1].id)}
-                aria-label={`View ${SERVICES_DATA[1].title} details`}
-                type="button"
-              >
-                <span className="absolute left-1/2 -top-2 -translate-y-[20%] translate-x-[30%] whitespace-nowrap text-[18px] font-medium text-[#334155] transition-colors group-hover:text-[#2563EB]">
-                  Fulfillment
-                </span>
-                <div className="relative h-14 w-14 rounded-full p-[4px]">
-                  <span
-                    className="absolute inset-0 rounded-full blur-lg"
-                    style={{ background: `${SERVICES_DATA[1].color}22` }}
-                  />
-                  <div className="absolute inset-0 rounded-full border border-[#3988EA]/30 bg-white/90 shadow-[0_14px_28px_rgba(15,23,42,0.10)]" />
-                  <div className="absolute inset-[1px] overflow-hidden rounded-full border border-white/70 bg-white">
-                    <img
-                      src="/fulfillment.png"
-                      alt="Fulfillment"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </div>
-              </button>
+              {SERVICES_DATA.map((service) => (
+                <ServiceNode
+                  key={service.id}
+                  service={service}
+                  layout={MOBILE_NODE_LAYOUT[service.id]}
+                  className="srv-mobile-node"
+                  onClick={setActiveService}
+                />
+              ))}
 
-              <button
-                ref={(el) => {
-                  mobileNodesRef.current[2] = el;
-                }}
-                className="srv-mobile-node absolute rounded-full group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-                style={{
-                  top: "162px",
-                  left: "82%",
-                  transform: "translateX(-50%)",
-                }}
-                onClick={() => setActiveService(SERVICES_DATA[2].id)}
-                aria-label={`View ${SERVICES_DATA[2].title} details`}
-                type="button"
-              >
-                <span className="absolute left-1/2 -top-4 -translate-x-[30%] -translate-y-[20%] whitespace-nowrap text-[18px] font-medium text-[#334155] transition-colors group-hover:text-[#2563EB]">
-                  Workforce
-                </span>
-                <div className="relative h-14 w-14 rounded-full p-[4px]">
-                  <span
-                    className="absolute inset-0 rounded-full blur-lg"
-                    style={{ background: `${SERVICES_DATA[2].color}22` }}
-                  />
-                  <div className="absolute inset-0 rounded-full border border-[#124D95]/30 bg-white/90 shadow-[0_14px_28px_rgba(15,23,42,0.10)]" />
-                  <div className="absolute inset-[1px] overflow-hidden rounded-full border border-white/70 bg-white">
-                    <img
-                      src="/workforce.png"
-                      alt="Workforce"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </div>
-              </button>
-
-              <button
-                ref={(el) => {
-                  mobileNodesRef.current[3] = el;
-                }}
-                className="srv-mobile-node absolute rounded-full group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-                style={{
-                  top: "418px",
-                  left: "22%",
-                  transform: "translateX(-50%)",
-                }}
-                onClick={() => setActiveService(SERVICES_DATA[3].id)}
-                aria-label={`View ${SERVICES_DATA[3].title} details`}
-                type="button"
-              >
-                <span className="absolute -left-[-135%] lg:left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap text-[18px] font-medium text-[#334155] transition-colors group-hover:text-[#2563EB]">
-                  Labeling, Packaging & Co-packing
-                </span>
-                <div className="relative h-14 w-14 rounded-full p-[4px]">
-                  <span
-                    className="absolute inset-0 rounded-full blur-lg"
-                    style={{ background: `${SERVICES_DATA[3].color}22` }}
-                  />
-                  <div className="absolute inset-0 rounded-full border border-[#1D4ED8]/30 bg-white/90 shadow-[0_14px_28px_rgba(15,23,42,0.10)]" />
-                  <div className="absolute inset-[1px] overflow-hidden rounded-full border border-white/70 bg-white">
-                    <img
-                      src="/valuead.png"
-                      alt="Value Added"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </div>
-              </button>
-
-              <button
-                ref={(el) => {
-                  mobileNodesRef.current[4] = el;
-                }}
-                className="srv-mobile-node absolute rounded-full group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-                style={{
-                  top: "388px",
-                  left: "78%",
-                  transform: "translateX(-50%)",
-                }}
-                onClick={() => setActiveService(SERVICES_DATA[4].id)}
-                aria-label={`View ${SERVICES_DATA[4].title} details`}
-                type="button"
-              >
-                <span className="absolute left-1/2 top-full mt-2 -translate-x-1/2 whitespace-nowrap text-[18px] font-medium text-[#334155] transition-colors group-hover:text-[#2563EB]">
-                  3PL Logistics
-                </span>
-                <div className="relative h-14 w-14 rounded-full p-[4px]">
-                  <span
-                    className="absolute inset-0 rounded-full blur-lg"
-                    style={{ background: `${SERVICES_DATA[4].color}22` }}
-                  />
-                  <div className="absolute inset-0 rounded-full border border-[#60A5FA]/30 bg-white/90 shadow-[0_14px_28px_rgba(15,23,42,0.10)]" />
-                  <div className="absolute inset-[1px] overflow-hidden rounded-full border border-white/70 bg-white">
-                    <img
-                      src="/3pl.png"
-                      alt="3PL Logistics"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                </div>
-              </button>
+              <EndCustomerNode mobile />
             </div>
           </div>
         </div>
@@ -1312,7 +1510,7 @@ export default function ServicesSection() {
               <div
                 ref={modalPanelRef}
                 className={
-                  activeService === 1
+                  activeService === 1 || activeService === 6
                     ? "relative w-full max-w-6xl overflow-y-auto overflow-x-hidden rounded-[24px] border border-white/15 bg-[#124D95] shadow-[0_30px_90px_rgba(15,23,42,0.45)] max-h-[min(92vh,960px)]"
                     : "relative w-full max-w-5xl overflow-y-auto overflow-x-hidden rounded-[24px] border border-white/15 bg-[#124D95] shadow-[0_30px_90px_rgba(15,23,42,0.45)] max-h-[min(92vh,960px)]"
                 }
@@ -1375,7 +1573,7 @@ export default function ServicesSection() {
                             {GLOBAL_TRANSPORT_MODES.map((mode) => (
                               <div
                                 key={mode.label}
-                                className="group flex items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.08] px-4 py-3 backdrop-blur-xl transition-all duration-300 hover:bg-white/[0.12] hover:border-white/25"
+                                className="group flex items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.08] px-4 py-3 backdrop-blur-xl transition-all duration-300 hover:border-white/25 hover:bg-white/[0.12]"
                               >
                                 <div
                                   className="flex h-11 w-11 items-center justify-center rounded-xl"
@@ -1436,12 +1634,11 @@ export default function ServicesSection() {
 
                         <div className="relative min-w-0">
                           <div className="relative overflow-hidden rounded-[28px] border border-white/15 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
-                            <div className="relative aspect-[4/3] w-full">
-                              <Image
-                                src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=2070"
+                            <div className="relative aspect-[4/3] w-full overflow-hidden">
+                              <img
+                                src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?q=80&w=2070&auto=format&fit=crop"
                                 alt="Global shipping"
-                                fill
-                                className="object-cover"
+                                className="absolute inset-0 h-full w-full object-cover"
                               />
                               <div className="absolute inset-0 bg-gradient-to-t from-[#0a1628]/75 via-[#0a1628]/20 to-transparent" />
                               <div
@@ -1491,32 +1688,154 @@ export default function ServicesSection() {
                       </div>
                     </div>
                   </>
-                ) : richServiceCard ? (
+                ) : activeService === 6 && activeServiceData ? (
                   <>
+                    <div className="absolute inset-0 bg-[linear-gradient(135deg,#071420_0%,#0F3C74_52%,#0D5FA9_100%)]" />
+                    <div className="absolute inset-0 bg-[radial-gradient(700px_circle_at_12%_18%,rgba(6,182,212,0.20),transparent_34%),radial-gradient(520px_circle_at_86%_80%,rgba(37,99,235,0.16),transparent_30%)]" />
                     <div
-                      className="pointer-events-none absolute inset-0 opacity-[0.03]"
+                      className="pointer-events-none absolute inset-0 opacity-[0.05]"
                       style={{
                         backgroundImage:
                           "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
-                        backgroundSize: "50px 50px",
+                        backgroundSize: "46px 46px",
                       }}
                     />
+
                     <button
                       onClick={closeModal}
-                      className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/25 bg-[#124D95]/90 text-white transition-colors hover:border-white/50 hover:bg-[#0e3d7a] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+                      className="absolute right-4 top-4 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:border-white/40 hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
                       aria-label="Close modal"
                       type="button"
                     >
                       <CloseIcon />
                     </button>
-                    <div className="relative z-10 p-4 sm:p-6 lg:p-8">
-                      <ServiceCardView
-                        service={richServiceCard}
-                        index={richCardIndex}
-                        variant="modal"
-                        titleId="modal-title"
-                        onCtaClick={scrollToContactAndClose}
-                      />
+
+                    <div className="relative z-10 p-5 sm:p-6 lg:p-8">
+                      <div className="grid grid-cols-1 gap-7 lg:grid-cols-[1.06fr_0.94fr] lg:gap-8">
+                        <div className="min-w-0">
+                          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.26em] text-white/90 backdrop-blur-sm">
+                            <Megaphone className="h-4 w-4 text-[#22D3EE]" />
+                            Integrated commerce add-on
+                          </span>
+
+                          <div className="mt-5">
+                            <div className="text-[11px] font-medium uppercase tracking-[0.26em] text-white/60">
+                              {activeServiceData.eyebrow}
+                            </div>
+
+                            <h3
+                              id="modal-title"
+                              className="mt-3 text-3xl font-semibold leading-[1.02] tracking-[-0.04em] text-white sm:text-4xl"
+                            >
+                              Build demand{" "}
+                              <span className="text-[#67E8F9]">
+                                before the first pallet moves.
+                              </span>
+                            </h3>
+
+                            <p className="mt-5 max-w-2xl text-sm leading-7 text-white/80 sm:text-base">
+                              This pillar is designed as an add-on to the core
+                              logistics engine, not a disconnected agency
+                              service. It is ideal when a product is being
+                              introduced through networking, new market entry or
+                              a launch phase that needs a serious digital
+                              presence before scaling into a full commerce
+                              platform.
+                            </p>
+                          </div>
+
+                          <div className="mt-6 flex flex-wrap gap-3">
+                            <div className="rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-sm text-white/85 backdrop-blur-xl">
+                              Custom-coded launch pages
+                            </div>
+                            <div className="rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-sm text-white/85 backdrop-blur-xl">
+                              E-commerce builds & migrations
+                            </div>
+                            <div className="rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-sm text-white/85 backdrop-blur-xl">
+                              Google Ads, SEO & creative production
+                            </div>
+                          </div>
+
+                          <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                            {DIGITAL_GROWTH_FEATURES.map((item) => (
+                              <div
+                                key={item.title}
+                                className="rounded-[22px] border border-white/15 bg-white/[0.08] p-4 backdrop-blur-xl"
+                              >
+                                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10">
+                                  <item.icon className="h-5 w-5 text-[#67E8F9]" />
+                                </div>
+                                <h4 className="mt-4 text-sm font-semibold text-white">
+                                  {item.title}
+                                </h4>
+                                <p className="mt-2 text-sm leading-6 text-white/68">
+                                  {item.text}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="mt-6">
+                            <Button
+                              size="lg"
+                              className="group rounded-full bg-[linear-gradient(90deg,#06B6D4,#0EA5E9)] px-8 py-6 text-white shadow-[0_18px_40px_rgba(6,182,212,0.28)] transition-all duration-300 hover:shadow-[0_22px_48px_rgba(6,182,212,0.34)]"
+                              onClick={scrollToContactAndClose}
+                            >
+                              <span className="flex items-center gap-2">
+                                Let’s Build Your Commerce Engine
+                                <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
+                              </span>
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="relative min-w-0">
+                          <div className="relative overflow-hidden rounded-[28px] border border-white/15 shadow-[0_24px_70px_rgba(0,0,0,0.28)]">
+                            <div className="relative aspect-[4/3] w-full overflow-hidden">
+                              <img
+                                src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2070&auto=format&fit=crop"
+                                alt="Website and digital growth"
+                                className="absolute inset-0 h-full w-full object-cover"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-[#071420]/82 via-[#071420]/18 to-transparent" />
+                              <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(103,232,249,0.24),transparent_24%)]" />
+                            </div>
+                          </div>
+
+                          <div className="absolute -left-3 top-5 rounded-2xl bg-white p-4 shadow-[0_20px_50px_rgba(0,0,0,0.22)] sm:-left-4 sm:p-5">
+                            <div className="flex items-center gap-3">
+                              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#06B6D4,#2563EB)] shadow-[0_12px_28px_rgba(6,182,212,0.25)]">
+                                <Monitor className="h-6 w-6 text-white" />
+                              </div>
+                              <div>
+                                <p className="text-base font-bold text-[#0F3C74]">
+                                  Pre-launch → Store
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                  One staged growth path
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="absolute -bottom-4 right-2 rounded-2xl bg-white p-4 shadow-[0_20px_50px_rgba(0,0,0,0.22)] sm:-right-3 sm:p-5">
+                            <div className="flex items-center gap-3">
+                              <Search className="h-7 w-7 text-[#06B6D4]" />
+                              <div>
+                                <p className="text-base font-bold text-[#0F3C74]">
+                                  Traffic + trust
+                                </p>
+                                <p className="text-xs text-slate-500">
+                                  Ads, SEO and content
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="absolute -bottom-6 -right-6 -z-10 h-28 w-28 rounded-3xl bg-[#06B6D4]/20 blur-2xl" />
+                          <div className="absolute -left-6 -top-6 -z-10 h-24 w-24 rounded-3xl bg-[#2563EB]/18 blur-2xl" />
+                        </div>
+                      </div>
                     </div>
                   </>
                 ) : null}
