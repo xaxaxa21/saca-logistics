@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
+import Script from 'next/script'
 
 import {
   AnalyticsGate,
@@ -8,6 +9,9 @@ import {
 } from '@/components/legal/cookie-consent'
 import IntroGate from '@/components/ui/preview-logo'
 import './globals.css'
+
+/** GA4 measurement ID shared across layout and consent-mode scripts. */
+const GA_ID = 'G-1NWC9S747P'
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -92,6 +96,35 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="font-sans antialiased">
+        {/*
+          Google Consent Mode v2 — must initialise BEFORE gtag.js loads so the tag is
+          always detectable by Google (Search Console, GA setup) while data collection
+          stays off by default until the visitor explicitly opts in via the cookie banner.
+        */}
+        <Script id="google-consent-init" strategy="beforeInteractive">{`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('consent', 'default', {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            functionality_storage: 'granted',
+            security_storage: 'granted',
+            wait_for_update: 500
+          });
+        `}</Script>
+
+        {/* Always load the gtag.js library so Google can verify the tag is present. */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+
+        {/* Configure the GA4 property; data is only sent when consent_storage is 'granted'. */}
+        <Script id="google-analytics-config" strategy="afterInteractive">{`
+          gtag('js', new Date());
+          gtag('config', '${GA_ID}');
+        `}</Script>
+
         {/* Mount consent once at the root so every route shares the same privacy state. */}
         <CookieConsentProvider>
           <IntroGate>{children}</IntroGate>

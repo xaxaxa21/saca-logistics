@@ -1,5 +1,13 @@
 'use client'
 
+/* eslint-disable no-var */
+declare global {
+  // gtag.js is injected unconditionally in app/layout.tsx; declare it for type-safe consent calls.
+  var gtag: (command: string, ...args: unknown[]) => void
+  var dataLayer: unknown[]
+}
+/* eslint-enable no-var */
+
 import {
   createContext,
   useCallback,
@@ -11,7 +19,6 @@ import {
   type ReactNode,
 } from 'react'
 import Link from 'next/link'
-import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/next'
 import { Cookie, ShieldCheck, SlidersHorizontal } from 'lucide-react'
 
@@ -56,8 +63,18 @@ const CONSENT_STORAGE_KEY = 'saca.cookieConsent'
 const CONSENT_COOKIE_NAME = 'saca_cookie_consent'
 const OPEN_SETTINGS_EVENT = 'saca:open-cookie-settings'
 
-/** GA4 measurement ID — loaded only when the visitor opts in to analytics (see AnalyticsGate). */
-const GA_MEASUREMENT_ID = 'G-1NWC9S747P'
+/**
+ * Push a Google Consent Mode v2 update. Gtag.js is always loaded via layout.tsx
+ * with all consent types defaulting to 'denied'. This function upgrades or
+ * downgrades analytics_storage so GA4 starts/stops sending measurement hits.
+ */
+function pushGtagConsent(analyticsGranted: boolean) {
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    window.gtag('consent', 'update', {
+      analytics_storage: analyticsGranted ? 'granted' : 'denied',
+    })
+  }
+}
 
 const CookieConsentContext = createContext<ConsentContextValue | null>(null)
 
@@ -80,6 +97,10 @@ function persistPreferences(preferences: ConsentPreferences) {
   const encodedValue = encodeURIComponent(preferences.mode)
   const secureAttribute = window.location.protocol === 'https:' ? '; Secure' : ''
   document.cookie = `${CONSENT_COOKIE_NAME}=${encodedValue}; Max-Age=${maxAge}; Path=/; SameSite=Lax${secureAttribute}`
+
+  // Immediately tell Google Consent Mode v2 about the updated choice so GA4
+  // starts or stops sending hits without requiring a page reload.
+  pushGtagConsent(preferences.analytics)
 }
 
 function readPreferences(): ConsentPreferences | null {
@@ -324,6 +345,12 @@ export function CookieConsentProvider({ children }: PropsWithChildren) {
     const stored = readPreferences()
     setPreferences(stored)
     setIsLoaded(true)
+
+    // On page load, restore the visitor's previous consent state to Google Consent Mode
+    // so GA4 can resume data collection without waiting for another explicit opt-in.
+    if (stored) {
+      pushGtagConsent(stored.analytics)
+    }
   }, [])
 
   useEffect(() => {
@@ -415,29 +442,15 @@ export function CookieSettingsButton({
 export function AnalyticsGate() {
   const { analyticsEnabled, isLoaded } = useCookieConsent()
 
-  // Do not mount optional analytics until the client has loaded and explicit consent exists.
+  // Vercel Analytics does not use Consent Mode, so gate it behind explicit opt-in.
+  // Google Analytics is loaded unconditionally in app/layout.tsx via gtag.js with
+  // Consent Mode v2 defaults set to 'denied'; pushGtagConsent() in persistPreferences
+  // and the initial load effect upgrade it to 'granted' once the visitor opts in.
   if (!isLoaded || !analyticsEnabled) {
     return null
   }
 
-  return (
-    <>
-      {/* Google Analytics (gtag.js) — same consent gate as Vercel Analytics. */}
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics-gtag" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${GA_MEASUREMENT_ID}');
-        `}
-      </Script>
-      <Analytics />
-    </>
-  )
+  return <Analytics />
 }
 
 export function useCookieConsent() {
