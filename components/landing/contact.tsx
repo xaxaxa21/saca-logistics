@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
@@ -15,6 +16,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -42,6 +44,7 @@ export function ContactSection() {
     company: "",
     phone: "",
     message: "",
+    privacyAccepted: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -206,6 +209,13 @@ export function ContactSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
+
+    // Require a visible privacy acknowledgment because the form collects personal data.
+    if (!formState.privacyAccepted) {
+      setSubmitError("Please confirm the privacy notice before sending your request.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -218,6 +228,7 @@ export function ContactSection() {
           company: formState.company.trim(),
           phone: formState.phone.trim(),
           message: formState.message.trim(),
+          privacyAccepted: formState.privacyAccepted,
         }),
       });
 
@@ -247,6 +258,7 @@ export function ContactSection() {
           company: "",
           phone: "",
           message: "",
+          privacyAccepted: false,
         });
       }, 3000);
     } catch {
@@ -269,7 +281,7 @@ export function ContactSection() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative py-28 lg:py-36 bg-gradient-to-b from-white via-gray-50/50 to-white overflow-hidden"
+      className="relative overflow-hidden bg-linear-to-b from-white via-gray-50/50 to-white py-28 lg:py-36"
     >
       {/* Background decorations */}
       <div className="absolute inset-0 pointer-events-none">
@@ -326,14 +338,14 @@ export function ContactSection() {
             <form
               ref={formRef}
               onSubmit={handleSubmit}
-              className="bg-white rounded-3xl p-8 lg:p-12 shadow-2xl shadow-black/5 border border-gray-100 relative overflow-hidden"
+              className="relative overflow-hidden rounded-3xl border border-gray-100 bg-white p-8 shadow-2xl shadow-black/5 lg:p-12"
             >
               {/* Form decorative element */}
-              <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[#3988EA]/5 to-transparent" />
+              <div className="absolute right-0 top-0 h-40 w-40 bg-linear-to-bl from-[#3988EA]/5 to-transparent" />
 
               {isSubmitted ? (
                 <div className="text-center py-16 relative z-10">
-                  <div className="w-24 h-24 mx-auto mb-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg shadow-green-500/30">
+                  <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-linear-to-br from-green-400 to-green-600 shadow-lg shadow-green-500/30">
                     <CheckCircle className="w-12 h-12 text-white" />
                   </div>
                   <h3 className="text-3xl font-bold text-[#124D95] mb-4">
@@ -472,10 +484,46 @@ export function ContactSection() {
                     </p>
                   )}
 
+                  <div className="form-field mb-6 rounded-2xl border border-[#3988EA]/15 bg-[#3988EA]/4 px-4 py-4">
+                    {/* The disclosure makes the lawful purpose and policy link visible at the point of data collection. */}
+                    <label className="flex items-start gap-3">
+                      <Checkbox
+                        checked={formState.privacyAccepted}
+                        onCheckedChange={(checked) =>
+                          setFormState((prev) => ({
+                            ...prev,
+                            privacyAccepted: checked === true,
+                          }))
+                        }
+                        aria-label="Acknowledge the privacy policy"
+                        className="mt-1 border-[#124D95]/30 data-[state=checked]:bg-[#124D95] data-[state=checked]:text-white"
+                      />
+                      <span className="text-sm leading-6 text-gray-600">
+                        I understand that my contact details and message will be
+                        processed to answer this request and any related service
+                        discussion. Read the{" "}
+                        <Link
+                          href="/privacy-policy"
+                          className="font-semibold text-[#124D95] underline-offset-4 hover:underline"
+                        >
+                          Privacy Policy
+                        </Link>{" "}
+                        and{" "}
+                        <Link
+                          href="/cookie-policy"
+                          className="font-semibold text-[#124D95] underline-offset-4 hover:underline"
+                        >
+                          Cookie Policy
+                        </Link>
+                        .
+                      </span>
+                    </label>
+                  </div>
+
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="form-field w-full group relative bg-gradient-to-r from-[#3988EA] to-[#124D95] hover:from-[#2a6fc7] hover:to-[#0e3d73] text-white font-semibold py-5 rounded-xl transition-all duration-500 hover:shadow-xl hover:shadow-[#3988EA]/30 disabled:opacity-70 overflow-hidden"
+                    className="form-field group relative w-full overflow-hidden rounded-xl bg-linear-to-r from-[#3988EA] to-[#124D95] py-5 font-semibold text-white transition-all duration-500 hover:from-[#2a6fc7] hover:to-[#0e3d73] hover:shadow-xl hover:shadow-[#3988EA]/30 disabled:opacity-70"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center justify-center gap-3">
@@ -507,7 +555,7 @@ export function ContactSection() {
                         <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                       </span>
                     )}
-                    <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                    <span className="absolute inset-0 -translate-x-full bg-linear-to-r from-white/0 via-white/20 to-white/0 transition-transform duration-700 group-hover:translate-x-full" />
                   </Button>
                 </div>
               )}
@@ -516,7 +564,7 @@ export function ContactSection() {
 
           {/* Contact Info */}
           <div className="contact-info lg:col-span-2 flex flex-col justify-center">
-            <div className="contact-info-card relative bg-gradient-to-br from-[#124D95] via-[#0e3d73] to-[#0a2d4d] rounded-3xl p-8 lg:p-10 text-white overflow-hidden">
+            <div className="contact-info-card relative overflow-hidden rounded-3xl bg-linear-to-br from-[#124D95] via-[#0e3d73] to-[#0a2d4d] p-8 text-white lg:p-10">
               {/* Card background pattern */}
               <div
                 className="absolute inset-0 opacity-10"
@@ -538,7 +586,7 @@ export function ContactSection() {
                       key={info.label}
                       className="contact-info-item flex items-start gap-4 group cursor-pointer"
                     >
-                      <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#3988EA] group-hover:scale-110 transition-all duration-300">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10 transition-all duration-300 group-hover:scale-110 group-hover:bg-[#3988EA]">
                         <info.icon className="w-5 h-5" />
                       </div>
                       <div>
@@ -575,7 +623,7 @@ export function ContactSection() {
 
             {/* Trust badge */}
             <div className="mt-6 bg-white rounded-2xl p-6 shadow-xl border border-gray-100 text-center overflow-hidden relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-[#3988EA]/5 via-transparent to-[#124D95]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-r from-[#3988EA]/5 via-transparent to-[#124D95]/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
               <p className="text-sm text-gray-600 mb-2 relative z-10">
                 Trusted by leading brands in
               </p>

@@ -13,6 +13,7 @@ type ContactPayload = {
   company?: string
   phone?: string
   message?: string
+  privacyAccepted?: boolean
 }
 
 export async function POST(request: NextRequest) {
@@ -29,10 +30,19 @@ export async function POST(request: NextRequest) {
   const company = typeof body.company === 'string' ? body.company.trim() : ''
   const phone = typeof body.phone === 'string' ? body.phone.trim() : ''
   const message = typeof body.message === 'string' ? body.message.trim() : ''
+  const privacyAccepted = body.privacyAccepted === true
 
   if (!name || !email || !message) {
     return NextResponse.json(
       { error: 'Name, email, and message are required.' },
+      { status: 400 }
+    )
+  }
+
+  // Enforce the same privacy acknowledgment server-side so direct requests cannot bypass it.
+  if (!privacyAccepted) {
+    return NextResponse.json(
+      { error: 'Privacy acknowledgment is required before submission.' },
       { status: 400 }
     )
   }
@@ -43,6 +53,7 @@ export async function POST(request: NextRequest) {
     company,
     phone,
     message,
+    privacyAccepted: 'yes',
   })
 
   let upstream: Response

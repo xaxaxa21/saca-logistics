@@ -13,6 +13,9 @@ import {
   ArrowUp,
   ArrowUpRight,
 } from "lucide-react";
+import { ComplianceLogos } from "@/components/legal/compliance-logos";
+import { CookieSettingsButton } from "@/components/legal/cookie-consent";
+import { LEGAL_NAV_ITEMS } from "@/lib/legal";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -123,7 +126,7 @@ export function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="relative bg-gradient-to-b from-[#0a1628] to-[#071018] text-white overflow-hidden"
+      className="relative overflow-hidden bg-linear-to-b from-[#0a1628] to-[#071018] text-white"
     >
       {/* Background elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -228,6 +231,37 @@ export function Footer() {
               </ul>
             </div>
           </div>
+
+          {/* Keep the legal trust signals close to the footer so compliance assets remain visible site-wide. */}
+          <div className="footer-column mt-12 rounded-[28px] border border-white/10 bg-white/3 p-6 backdrop-blur-sm">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#9bcbff]">
+                  Privacy and compliance
+                </p>
+                <p className="mt-3 text-sm leading-6 text-white/60">
+                  Review our legal information, manage analytics consent at any
+                  time, and access the trust resources associated with the site.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                {LEGAL_NAV_ITEMS.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 transition-colors duration-300 hover:bg-white/10 hover:text-white"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+                <CookieSettingsButton className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/70 transition-colors duration-300 hover:bg-white/10 hover:text-white">
+                  Cookie Settings
+                </CookieSettingsButton>
+              </div>
+            </div>
+
+            <ComplianceLogos className="mt-6" />
+          </div>
         </div>
 
         {/* Bottom Bar */}
@@ -239,16 +273,22 @@ export function Footer() {
 
           <div className="flex items-center gap-8">
             <Link
-              href="#"
+              href="/privacy-policy"
               className="text-sm text-white/40 hover:text-white transition-colors duration-300"
             >
               Privacy Policy
             </Link>
             <Link
-              href="#"
+              href="/cookie-policy"
               className="text-sm text-white/40 hover:text-white transition-colors duration-300"
             >
-              Terms of Service
+              Cookie Policy
+            </Link>
+            <Link
+              href="/terms-and-conditions"
+              className="text-sm text-white/40 hover:text-white transition-colors duration-300"
+            >
+              Terms & Conditions
             </Link>
           </div>
         </div>
@@ -257,7 +297,7 @@ export function Footer() {
       {/* Scroll to Top Button */}
       <button
         onClick={scrollToTop}
-        className={`fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-gradient-to-br from-[#3988EA] to-[#124D95] text-white shadow-lg hover:shadow-xl hover:shadow-[#3988EA]/30 transition-all duration-500 flex items-center justify-center z-50 group ${
+        className={`fixed bottom-8 right-8 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-[#3988EA] to-[#124D95] text-white shadow-lg transition-all duration-500 hover:shadow-xl hover:shadow-[#3988EA]/30 z-50 group ${
           showScrollTop
             ? "opacity-100 translate-y-0"
             : "opacity-0 translate-y-4 pointer-events-none"

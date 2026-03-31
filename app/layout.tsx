@@ -1,6 +1,11 @@
 import type { Metadata } from 'next'
 import { Inter, Playfair_Display } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
+
+import {
+  AnalyticsGate,
+  CookieConsentController,
+  CookieConsentProvider,
+} from '@/components/legal/cookie-consent'
 import IntroGate from '@/components/ui/preview-logo'
 import './globals.css'
 
@@ -87,8 +92,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className="font-sans antialiased">
-        <IntroGate>{children}</IntroGate>
-        <Analytics />
+        {/* Mount consent once at the root so every route shares the same privacy state. */}
+        <CookieConsentProvider>
+          <IntroGate>{children}</IntroGate>
+          <CookieConsentController />
+          <AnalyticsGate />
+        </CookieConsentProvider>
       </body>
     </html>
   )
