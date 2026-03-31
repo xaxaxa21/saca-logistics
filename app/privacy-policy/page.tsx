@@ -83,9 +83,10 @@ export default function PrivacyPolicyPage() {
           ))}
         </ul>
         <p>
-          If we later add services such as Google Analytics, Google Tag Manager,
-          or similar marketing and measurement tools, they will only be enabled
-          after consent and this policy will be updated accordingly.
+          Google Analytics (GA4 via gtag.js) is used for aggregated website
+          measurement only after you grant analytics consent. If we add further
+          services such as Google Tag Manager or similar tools, they will only be
+          enabled after consent and this policy will be updated accordingly.
         </p>
       </LegalSection>
 

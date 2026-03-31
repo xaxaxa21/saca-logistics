@@ -45,6 +45,7 @@ export const DATA_COLLECTION_SUMMARY = {
     'Vercel for hosting and deployment infrastructure.',
     'FormSync for secure delivery of contact form submissions.',
     'Vercel Analytics only after the visitor grants analytics consent.',
+    'Google Analytics (gtag.js) for aggregated traffic measurement, only after analytics consent.',
   ],
   legalBases: [
     'Article 6(1)(b) GDPR for steps taken before entering into a contract when an inquiry relates to requested services.',

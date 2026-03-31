@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react'
 import Link from 'next/link'
+import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/next'
 import { Cookie, ShieldCheck, SlidersHorizontal } from 'lucide-react'
 
@@ -54,6 +55,9 @@ type ConsentContextValue = {
 const CONSENT_STORAGE_KEY = 'saca.cookieConsent'
 const CONSENT_COOKIE_NAME = 'saca_cookie_consent'
 const OPEN_SETTINGS_EVENT = 'saca:open-cookie-settings'
+
+/** GA4 measurement ID — loaded only when the visitor opts in to analytics (see AnalyticsGate). */
+const GA_MEASUREMENT_ID = 'G-1NWC9S747P'
 
 const CookieConsentContext = createContext<ConsentContextValue | null>(null)
 
@@ -259,8 +263,9 @@ function CookieConsentInner() {
                     Analytics
                   </h3>
                   <p className="mt-1 text-sm leading-6 text-white/65">
-                    Measures site usage with Vercel Analytics. This category is
-                    disabled by default and only turns on after you opt in.
+                    Measures site usage with Vercel Analytics and Google
+                    Analytics (gtag.js). This category is disabled by default and
+                    only turns on after you opt in.
                   </p>
                 </div>
               </label>
@@ -415,7 +420,24 @@ export function AnalyticsGate() {
     return null
   }
 
-  return <Analytics />
+  return (
+    <>
+      {/* Google Analytics (gtag.js) — same consent gate as Vercel Analytics. */}
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+        strategy="afterInteractive"
+      />
+      <Script id="google-analytics-gtag" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${GA_MEASUREMENT_ID}');
+        `}
+      </Script>
+      <Analytics />
+    </>
+  )
 }
 
 export function useCookieConsent() {

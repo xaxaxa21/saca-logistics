@@ -46,13 +46,14 @@ export default function CookiePolicyPage() {
       <LegalSection title="Analytics technologies">
         <p>
           Analytics is an optional category used to understand aggregate traffic
-          and improve the website. It is currently reserved for Vercel Analytics
-          and is only loaded after explicit consent.
+          and improve the website. When you opt in, we may load Vercel Analytics
+          and Google Analytics (gtag.js, measurement ID G-1NWC9S747P). Neither
+          runs until you grant analytics consent.
         </p>
         <p>
-          If additional analytics or tag-management tools are added later, they
-          will remain off until consent is granted and this policy will be
-          updated before activation.
+          If we add further analytics or tag-management tools later, they will
+          remain off until consent is granted and this policy will be updated
+          before activation.
         </p>
       </LegalSection>
 
