@@ -308,7 +308,7 @@ const MOBILE_NODE_LAYOUT: Record<number, NodeLayout> = {
   6: {
     style: { top: "560px", left: "50%", transform: "translateX(-50%)" },
     labelClass:
-      "bottom-[calc(100%+12px)] left-1/2 -translate-x-1/2 w-44 text-center whitespace-normal",
+      "bottom-[calc(80%+12px)] left-1/2 -translate-x-1/2 w-44 text-center whitespace-normal",
     bubbleClass: "h-14 w-14 p-[4px]",
     innerClass: "inset-[4px]",
   },
@@ -1368,7 +1368,7 @@ export default function ServicesSection() {
                   className="srv-mobile-line"
                   x1="50%"
                   y1="304"
-                  x2="34%"
+                  x2="49%"
                   y2="588"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1.5"
@@ -1415,6 +1415,17 @@ export default function ServicesSection() {
                   y1="430"
                   x2="34%"
                   y2="588"
+                  stroke="url(#mobileLineGradient)"
+                  strokeWidth="1"
+                  strokeDasharray="4 4"
+                  opacity="0"
+                />
+                <line
+                  className="srv-mobile-line"
+                  x1="50%"
+                  y1="588"
+                  x2="50%"
+                  y2="714"
                   stroke="url(#mobileLineGradient)"
                   strokeWidth="1"
                   strokeDasharray="4 4"
